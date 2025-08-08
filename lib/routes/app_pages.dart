@@ -30,7 +30,7 @@ import 'package:taxi_driver/features/driver/vehicle_registration/vehicle_registr
 import 'package:taxi_driver/routes/app_routes.dart';
 
 class AppPages {
-  static final initial = AppRoutes.splash;
+  static const initial = AppRoutes.splash;
 
   static final routes = [
     GetPage(
@@ -99,7 +99,7 @@ class AppPages {
       binding: AvailabilityMainBinding(),
     ),
     GetPage(
-      name: driverAvailability,
+      name:AppRoutes.driverAvailability,
       page: () => const DriverAvailabilityView(),
       binding: DriverAvailabilityBinding(),
     ),
@@ -115,5 +115,5 @@ class AppPages {
     ),
   ];
   
-  static get driverAvailability => null;
+
 }
