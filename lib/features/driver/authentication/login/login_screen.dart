@@ -104,18 +104,21 @@ class LoginScreen extends StatelessWidget {
               textcolor: AppColors.primaryappcolor,
             ),
 
-            /// Forgot Password
+            ///============= Forgot Password==================
             GestureDetector(
               onTap: () {
                 Get.to(() => PasswordOtp());
               },
-              child: Align(
-                alignment: Alignment.topRight,
-                child: CText(
-                  text: 'Forgot password ?',
-                  fontSize: 16.sp,
-                  color: AppColors.primarybackColor,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  
+                  CText(
+                    text: 'Forgot password ?',
+                    fontSize: 16.sp,
+                    color: AppColors.primarybackColor,
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 30.h),
@@ -127,7 +130,8 @@ class LoginScreen extends StatelessWidget {
               },
               width: double.infinity,
             ),
-            SizedBox(height: 15.h),
+            // SizedBox(height: 15.h),
+            Spacer(),
             RichText(
               text: TextSpan(
                 style: TextStyle(fontSize: 16.sp, color: Colors.black),
@@ -149,6 +153,8 @@ class LoginScreen extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(height: 20.h),
+
           ],
         ),
       ),

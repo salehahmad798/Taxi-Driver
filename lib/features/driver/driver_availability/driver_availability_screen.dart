@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taxi_driver/features/driver/driver_availability/driver_availability_controller.dart';
 
-class DriverAvailabilityView extends GetView<DriverAvailabilityController> {
-  const DriverAvailabilityView({Key? key}) : super(key: key);
+class DriverAvailabilityScreen extends GetView<DriverAvailabilityController> {
+  const DriverAvailabilityScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

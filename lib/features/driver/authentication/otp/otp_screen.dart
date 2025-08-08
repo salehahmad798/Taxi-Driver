@@ -108,7 +108,7 @@ class _OtpScreenState extends State<OtpScreen> {
             PrimaryButton(
               text: 'Verify Now',
               onTap: () {
-                // Get.toNamed(AppRoutes.pickUp);
+                Get.toNamed(AppRoutes.documentUpload);
               },
             ),
             SizedBox(height: 16.h),

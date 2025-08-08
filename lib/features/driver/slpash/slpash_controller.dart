@@ -23,7 +23,7 @@ class SplashController extends GetxController
 
     Timer(const Duration(seconds: 3), () async{
 
-      // Get.offAllNamed(AppRoutes.onboarding);
+      Get.offAllNamed(AppRoutes.onboarding);
     });
   }
 

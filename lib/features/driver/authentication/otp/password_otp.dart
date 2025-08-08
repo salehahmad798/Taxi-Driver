@@ -109,6 +109,8 @@ class _PasswordOtpState extends State<PasswordOtp> {
               text: 'Verify Now',
               onTap: () {
                 // Get.toNamed(AppRoutes.);
+                Get.toNamed(AppRoutes.documentUpload);
+
               },
             ),
             SizedBox(height: 16.h),

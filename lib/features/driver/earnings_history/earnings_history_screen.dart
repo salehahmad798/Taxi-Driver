@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taxi_driver/features/driver/earnings_history/earnings_history_controller.dart';
 
-class EarningsHistoryView extends GetView<EarningsHistoryController> {
-  const EarningsHistoryView({Key? key}) : super(key: key);
+class EarningsHistoryScreen extends GetView<EarningsHistoryController> {
+  const EarningsHistoryScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taxi_driver/features/driver/availability/availability_controller.dart';
 
-class AvailabilityMainView extends GetView<AvailabilityMainController> {
-  const AvailabilityMainView({Key? key}) : super(key: key);
+class AvailabilityMainScreen extends GetView<AvailabilityMainController> {
+  const AvailabilityMainScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

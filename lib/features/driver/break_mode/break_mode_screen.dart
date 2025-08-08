@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taxi_driver/features/driver/break_mode/break_mode_controller.dart';
 
-class BreakModeView extends GetView<BreakModeController> {
-  const BreakModeView({Key? key}) : super(key: key);
+class BreakModeScreen extends GetView<BreakModeController> {
+  const BreakModeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -6,7 +6,7 @@ import 'dart:io';
 
 import 'package:taxi_driver/features/driver/vehicle_details/vehicle_details_controller.dart';
 
-class VehicleDetailsView extends GetView<VehicleDetailsController> {
+class VehicleDetailsScreen extends GetView<VehicleDetailsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

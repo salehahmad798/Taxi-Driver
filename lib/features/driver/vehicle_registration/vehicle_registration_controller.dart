@@ -5,9 +5,9 @@ import 'package:taxi_driver/features/driver/data/providers/api_provider.dart';
 
 class VehicleRegistrationController extends GetxController {
   final ApiProvider _apiProvider = Get.find<ApiProvider>();
-  
+
   final formKey = GlobalKey<FormState>();
-  
+
   // Form controllers
   final drivingLicenseController = TextEditingController();
   final makeController = TextEditingController();
@@ -17,17 +17,44 @@ class VehicleRegistrationController extends GetxController {
   final engineNumberController = TextEditingController();
   final chassisNumberController = TextEditingController();
   final ownerAddressController = TextEditingController();
+  final ownernameController = TextEditingController();
   
+
+
   // Observable variables
-  var selectedVehicleType = ''.obs;
-  var selectedFuelType = ''.obs;
+RxString selectedFuelType = ''.obs;
   var registrationDate = Rx<DateTime?>(null);
   var expiryDate = Rx<DateTime?>(null);
   var isLoading = false.obs;
-  
+
+  RxString selectedVehicleType = ''.obs;
+
+  // Example vehicle types with icon and name
+  final vehicleTypes = [
+    {'name': 'Car', 'icon': Icons.directions_car},
+    {'name': 'Bike', 'icon': Icons.motorcycle},
+    {'name': 'Van', 'icon': Icons.airport_shuttle},
+    {'name': 'Truck', 'icon': Icons.fire_truck_outlined},
+    {'name': 'Bus', 'icon': Icons.bus_alert_rounded},
+    {'name': 'other', 'icon': Icons.car_crash_outlined},
+
+  ];
+
+  void setVehicleType(String typeName) {
+    selectedVehicleType.value = typeName;
+  }
+
+  RxList<String> fuelTypes = ['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG', 'LPG'].obs;
+
+
+void setFuelType(String type) {
+  selectedFuelType.value = type;
+}
+
+
   // Dropdown options
-  final vehicleTypes = ['Car', 'Motorcycle', 'Truck', 'Van'];
-  final fuelTypes = ['Petrol', 'Diesel', 'Electric', 'Hybrid'];
+  // final vehicleTypes = ['Car', 'Motorcycle', 'Truck', 'Van'];
+  // final fuelTypes = ['Petrol', 'Diesel', 'Electric', 'Hybrid'];
 
   @override
   void onInit() {
@@ -47,13 +74,7 @@ class VehicleRegistrationController extends GetxController {
     super.onClose();
   }
 
-  void setVehicleType(String type) {
-    selectedVehicleType.value = type;
-  }
 
-  void setFuelType(String type) {
-    selectedFuelType.value = type;
-  }
 
   void setRegistrationDate(DateTime date) {
     registrationDate.value = date;
@@ -65,9 +86,9 @@ class VehicleRegistrationController extends GetxController {
 
   Future<void> submitVehicleRegistration() async {
     if (!formKey.currentState!.validate()) return;
-    
+
     isLoading.value = true;
-    
+
     try {
       final vehicle = VehicleModel(
         drivingLicense: drivingLicenseController.text,
@@ -85,7 +106,7 @@ class VehicleRegistrationController extends GetxController {
       );
 
       final response = await _apiProvider.registerVehicle(vehicle);
-      
+
       if (response.isOk) {
         Get.snackbar('Success', 'Vehicle registered successfully');
         Get.offNamed('/document-upload');
@@ -106,4 +127,3 @@ class VehicleRegistrationController extends GetxController {
     return null;
   }
 }
-

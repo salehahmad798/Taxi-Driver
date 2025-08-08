@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:taxi_driver/features/driver/data/models/review_models.dart';
 import 'package:taxi_driver/features/driver/document_review/document_review_controller.dart';
 
-class DocumentReviewView extends GetView<DocumentReviewController> {
+class DocumentReviewScreen extends GetView<DocumentReviewController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

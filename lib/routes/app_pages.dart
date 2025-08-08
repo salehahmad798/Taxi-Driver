@@ -8,7 +8,7 @@ import 'package:taxi_driver/features/driver/authentication/otp/otp_screen.dart';
 import 'package:taxi_driver/features/driver/authentication/signup/signup_binding.dart';
 import 'package:taxi_driver/features/driver/authentication/signup/signup_screen.dart';
 import 'package:taxi_driver/features/driver/availability/availability_binding.dart';
-import 'package:taxi_driver/features/driver/availability/availability_screen.dart';
+import 'package:taxi_driver/features/driver/availability/availability_main_screen.dart';
 import 'package:taxi_driver/features/driver/break_mode/break_mode_binding.dart';
 import 'package:taxi_driver/features/driver/break_mode/break_mode_screen.dart';
 import 'package:taxi_driver/features/driver/document_review/document_review_binding.dart';
@@ -75,42 +75,42 @@ class AppPages {
 
     GetPage(
       name: AppRoutes.vehicleRegistration,
-      page: () => VehicleRegistrationView(),
+      page: () => VehicleRegistrationScreen(),
       binding: VehicleRegistrationBinding(),
     ),
     GetPage(
       name: AppRoutes.documentUpload,
-      page: () => DocumentUploadView(),
+      page: () => DocumentUploadScreen(),
       binding: DocumentUploadBinding(),
     ),
     GetPage(
       name: AppRoutes.vehicleDetails,
-      page: () => VehicleDetailsView(),
+      page: () => VehicleDetailsScreen(),
       binding: VehicleDetailsBinding(),
     ),
     GetPage(
       name: AppRoutes.documentReview,
-      page: () => DocumentReviewView(),
+      page: () => DocumentReviewScreen(),
       binding: DocumentReviewBinding(),
     ),
     GetPage(
       name:AppRoutes.availabilityMain,
-      page: () => const AvailabilityMainView(),
+      page: () => const AvailabilityMainScreen(),
       binding: AvailabilityMainBinding(),
     ),
     GetPage(
       name:AppRoutes.driverAvailability,
-      page: () => const DriverAvailabilityView(),
+      page: () => const DriverAvailabilityScreen(),
       binding: DriverAvailabilityBinding(),
     ),
     GetPage(
       name:AppRoutes.breakMode,
-      page: () => const BreakModeView(),
+      page: () => const BreakModeScreen(),
       binding: BreakModeBinding(),
     ),
     GetPage(
       name: AppRoutes.earningsHistory,
-      page: () => const EarningsHistoryView(),
+      page: () => const EarningsHistoryScreen(),
       binding: EarningsHistoryBinding(),
     ),
   ];
