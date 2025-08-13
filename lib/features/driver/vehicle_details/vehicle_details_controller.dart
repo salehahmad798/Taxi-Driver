@@ -11,13 +11,13 @@ class VehicleDetailsController extends GetxController {
   final ApiProvider _apiProvider = Get.find<ApiProvider>();
   final ImagePicker _picker = ImagePicker();
 
-  // Observable variables
+  // ================  Observable variables =================
   var vehiclePhotos = <VehiclePhoto>[].obs;
   var isLoading = false.obs;
   var uploadProgress = 0.0.obs;
   var currentUploadingPhoto = ''.obs;
 
-  // Required photo types
+  //  =================== Required photo types ==================
   final requiredPhotoTypes = [
     PhotoType('Front View', 'Take a clear photo of vehicle front', Icons.directions_car, true),
     PhotoType('Rear View', 'Take a clear photo of vehicle rear', Icons.directions_car, true),
@@ -60,7 +60,7 @@ class VehicleDetailsController extends GetxController {
             .map((json) => VehiclePhoto.fromJson(json))
             .toList();
 
-        // Update existing photos with server data
+        //  ================= Update existing photos with server data ================
         for (var existingPhoto in existingPhotos) {
           final index = vehiclePhotos.indexWhere((photo) => photo.type == existingPhoto.type);
           if (index != -1) {
@@ -120,11 +120,11 @@ class VehicleDetailsController extends GetxController {
     isLoading.value = true;
     uploadProgress.value = 0.0;
 
-    // Update UI immediately to show uploading state
+    // ================= Update UI immediately to show uploading state ================= 
     updatePhotoStatus(photoType, 'uploading', filePath);
 
-    try {
-      // Simulate progress for better UX
+    try { 
+      //  ================== Simulate progress for better UX ======================
       _simulateUploadProgress();
 
       final response = await _apiProvider.uploadVehiclePhoto(filePath, photoType);
@@ -346,18 +346,19 @@ class VehicleDetailsController extends GetxController {
   }
 
   void proceedToNext() {
-    if (allRequiredPhotosUploaded) {
-      Get.toNamed('/document-review');
-    } else {
-      Get.snackbar(
-        'Incomplete',
-        'Please upload all required vehicle photos to continue',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.orange[100],
-        colorText: Colors.orange[800],
-        icon: Icon(Icons.warning, color: Colors.orange),
-      );
-    }
+    // if (allRequiredPhotosUploaded) {
+    //   Get.toNamed('/document-review');
+    // } else {
+    //   Get.snackbar(
+    //     'Incomplete',
+    //     'Please upload all required vehicle photos to continue',
+    //     snackPosition: SnackPosition.TOP,
+    //     backgroundColor: Colors.orange[100],
+    //     colorText: Colors.orange[800],
+    //     icon: Icon(Icons.warning, color: Colors.orange),
+    //   );
+    // }
+        Get.toNamed('/document-review');
   }
 
   @override

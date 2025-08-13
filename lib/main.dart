@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taxi_driver/core/constants/app_themes.dart';
 import 'package:taxi_driver/core/constants/theme_controller.dart';
+import 'package:taxi_driver/features/driver/data/services/notification_service.dart';
+import 'package:taxi_driver/features/driver/data/services/service_init.dart';
 import 'package:taxi_driver/routes/app_pages.dart';
 import 'package:taxi_driver/routes/app_routes.dart';
 import 'package:get/get.dart';
@@ -11,8 +13,20 @@ import 'package:get_storage/get_storage.dart';
 
 
 void main() async {
-  await GetStorage.init();
+  
 
+
+
+WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize GetStorage
+  await GetStorage.init();
+  
+  // Initialize Notifications
+  // await NotificationService.init();
+  
+  // Initialize Services
+  ServiceInit.init();
   runApp(MyApp());
 }
 

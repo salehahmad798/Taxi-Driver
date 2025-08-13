@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:taxi_driver/core/constants/app_colors.dart';
 import 'package:taxi_driver/features/driver/data/models/review_models.dart';
 import 'package:taxi_driver/features/driver/document_review/document_review_controller.dart';
 
 class DocumentReviewScreen extends GetView<DocumentReviewController> {
+  const DocumentReviewScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,14 +29,22 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
         ),
         centerTitle: true,
         actions: [
-          Obx(() => IconButton(
-                icon: Icon(
-                  controller.autoRefreshEnabled.value ? Icons.sync : Icons.sync_disabled,
-                  color: controller.autoRefreshEnabled.value ? Colors.green : Colors.grey,
-                ),
-                onPressed: controller.toggleAutoRefresh,
-                tooltip: controller.autoRefreshEnabled.value ? 'Auto-refresh ON' : 'Auto-refresh OFF',
-              )),
+          Obx(
+            () => IconButton(
+              icon: Icon(
+                controller.autoRefreshEnabled.value
+                    ? Icons.sync
+                    : Icons.sync_disabled,
+                color: controller.autoRefreshEnabled.value
+                    ? Colors.green
+                    : Colors.grey,
+              ),
+              onPressed: controller.toggleAutoRefresh,
+              tooltip: controller.autoRefreshEnabled.value
+                  ? 'Auto-refresh ON'
+                  : 'Auto-refresh OFF',
+            ),
+          ),
           IconButton(
             icon: Icon(Icons.refresh, color: Colors.blue),
             onPressed: controller.refreshData,
@@ -59,183 +71,220 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
             ),
             child: Column(
               children: [
-                Obx(() => Row(
-                      children: [
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: controller.getStatusColor().withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            controller.getStatusIcon(),
-                            color: controller.getStatusColor(),
-                            size: 30,
-                          ),
+                Obx(
+                  () => Row(
+                    children: [
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: controller.getStatusColor().withOpacity(0.1),
+                          shape: BoxShape.circle,
                         ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Review Status',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                controller.getStatusMessage(),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
+                        child: Icon(
+                          controller.getStatusIcon(),
+                          color: controller.getStatusColor(),
+                          size: 30,
                         ),
-                      ],
-                    )),
-                SizedBox(height: 20),
-                Obx(() => LinearProgressIndicator(
-                      value: controller.progressPercentage,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation<Color>(controller.getStatusColor()),
-                      minHeight: 8,
-                    )),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Review Status',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text(
+                              controller.getStatusMessage(),
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20.h),
+                Obx(
+                  () => LinearProgressIndicator(
+                    value: controller.progressPercentage,
+                    backgroundColor: Colors.grey[200],
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      controller.getStatusColor(),
+                    ),
+                    minHeight: 8,
+                  ),
+                ),
                 SizedBox(height: 12),
-                Obx(() => Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildProgressItem(
-                          'Approved',
-                          controller.approvedItems.value.toString(),
-                          Colors.green,
-                          Icons.check_circle,
-                        ),
-                        _buildProgressItem(
-                          'Pending',
-                          controller.pendingItems.value.toString(),
-                          Colors.orange,
-                          Icons.hourglass_empty,
-                        ),
-                        _buildProgressItem(
-                          'Rejected',
-                          controller.rejectedItems.value.toString(),
-                          Colors.red,
-                          Icons.cancel,
-                        ),
-                      ],
-                    )),
+                Obx(
+                  () => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildProgressItem(
+                        'Approved',
+                        controller.approvedItems.value.toString(),
+                        Colors.green,
+                        Icons.check_circle,
+                      ),
+                      _buildProgressItem(
+                        'Pending',
+                        controller.pendingItems.value.toString(),
+                        Colors.orange,
+                        Icons.hourglass_empty,
+                      ),
+                      _buildProgressItem(
+                        'Rejected',
+                        controller.rejectedItems.value.toString(),
+                        Colors.red,
+                        Icons.cancel,
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
 
           // Loading Indicator
-          Obx(() => controller.refreshing.value
-              ? Container(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                      SizedBox(width: 8),
-                      Text('Refreshing...', style: TextStyle(fontSize: 12)),
-                    ],
-                  ),
-                )
-              : SizedBox.shrink()),
+          Obx(
+            () => controller.refreshing.value
+                ? Container(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        SizedBox(width: 8),
+                        Text('Refreshing...', style: TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                  )
+                : SizedBox.shrink(),
+          ),
 
           // Documents and Photos List
           Expanded(
-            child: Obx(() => controller.isLoading.value
-                ? Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: controller.refreshData,
-                    child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (controller.documents.isNotEmpty) ...[
-                              _buildSectionHeader('Documents', Icons.description),
-                              SizedBox(height: 10),
-                              ...controller.documents.map((item) => _buildReviewItem(item)),
-                              SizedBox(height: 20),
-                            ],
-                            if (controller.vehiclePhotos.isNotEmpty) ...[
-                              _buildSectionHeader('Vehicle Photos', Icons.directions_car),
-                              SizedBox(height: 10),
-                              ...controller.vehiclePhotos.map((item) => _buildReviewItem(item)),
-                              SizedBox(height: 20),
-                            ],
-                            if (controller.documents.isEmpty && controller.vehiclePhotos.isEmpty)
-                              Center(
-                                child: Column(
-                                  children: [
-                                    SizedBox(height: 50),
-                                    Icon(Icons.inbox, size: 64, color: Colors.grey[400]),
-                                    SizedBox(height: 16),
-                                    Text('No items to review'),
-                                  ],
+            child: Obx(
+              () => controller.isLoading.value
+                  ? Center(child: CircularProgressIndicator())
+                  : RefreshIndicator(
+                      onRefresh: controller.refreshData,
+                      child: SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (controller.documents.isNotEmpty) ...[
+                                _buildSectionHeader(
+                                  'Documents',
+                                  Icons.description,
                                 ),
-                              ),
-                            SizedBox(height: 100), // Extra space for FAB
-                          ],
+                                SizedBox(height: 10),
+                                ...controller.documents.map(
+                                  (item) => _buildReviewItem(item),
+                                ),
+                                SizedBox(height: 20),
+                              ],
+                              if (controller.vehiclePhotos.isNotEmpty) ...[
+                                _buildSectionHeader(
+                                  'Vehicle Photos',
+                                  Icons.directions_car,
+                                ),
+                                SizedBox(height: 10),
+                                ...controller.vehiclePhotos.map(
+                                  (item) => _buildReviewItem(item),
+                                ),
+                                SizedBox(height: 20),
+                              ],
+                              if (controller.documents.isEmpty &&
+                                  controller.vehiclePhotos.isEmpty)
+                                Center(
+                                  child: Column(
+                                    children: [
+                                      SizedBox(height: 50),
+                                      Icon(
+                                        Icons.inbox,
+                                        size: 64,
+                                        color: Colors.grey[400],
+                                      ),
+                                      SizedBox(height: 16),
+                                      Text('No items to review'),
+                                    ],
+                                  ),
+                                ),
+                              SizedBox(height: 100), // Extra space for FAB
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  )),
+            ),
           ),
         ],
       ),
-      floatingActionButton: Obx(() => controller.overallStatus.value == ReviewStatus.approved
-          ? FloatingActionButton.extended(
-              onPressed: controller.proceedToNext,
-              backgroundColor: Colors.green,
-              icon: Icon(Icons.arrow_forward, color: Colors.white),
-              label: Text(
-                'Continue',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            )
-          : SizedBox.shrink()),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          controller.proceedToNext();
+        },
+        backgroundColor: Colors.green,
+        icon: Icon(Icons.arrow_forward, color: Colors.white),
+        label: Text(
+          'Continue',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
+      ),
+      // Obx(() => controller.overallStatus.value == ReviewStatus.approved
+      //     ? FloatingActionButton.extended(
+      //         onPressed: controller.proceedToNext,
+      //         backgroundColor: Colors.green,
+      //         icon: Icon(Icons.arrow_forward, color: Colors.white),
+      //         label: Text(
+      //           'Continue',
+      //           style: TextStyle(
+      //             color: Colors.white,
+      //             fontWeight: FontWeight.w600,
+      //           ),
+      //         ),
+      //       )
+      //     : SizedBox.shrink()),
     );
   }
 
-  Widget _buildProgressItem(String label, String value, Color color, IconData icon) {
+  Widget _buildProgressItem(
+    String label,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
     return Column(
       children: [
         Icon(icon, color: color, size: 20),
-        SizedBox(height: 4),
+        SizedBox(height: 4.h),
         Text(
           value,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 18.sp,
             fontWeight: FontWeight.bold,
             color: color,
           ),
         ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 12.sp, color: Colors.grey[600])),
       ],
     );
   }
@@ -244,7 +293,7 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
     return Row(
       children: [
         Icon(icon, color: Colors.grey[600], size: 20),
-        SizedBox(width: 8),
+        SizedBox(width: 8.h),
         Text(
           title,
           style: TextStyle(
@@ -260,7 +309,7 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
   Widget _buildReviewItem(ReviewItem item) {
     Color statusColor = _getItemStatusColor(item.status);
     IconData statusIcon = _getItemStatusIcon(item.status);
-    
+
     return Container(
       margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -290,10 +339,7 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
             Expanded(
               child: Text(
                 item.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
               ),
             ),
             if (item.isRequired)
@@ -307,7 +353,7 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
                   'Required',
                   style: TextStyle(
                     color: Colors.orange[700],
-                    fontSize: 10,
+                    fontSize: 10.sp,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -328,13 +374,13 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
                 _getStatusText(item.status),
                 style: TextStyle(
                   color: statusColor,
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
             if (item.reviewNotes != null) ...[
-              SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Container(
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -362,10 +408,7 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
                     SizedBox(height: 4),
                     Text(
                       item.reviewNotes!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.red[800],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.red[800]),
                     ),
                   ],
                 ),
@@ -375,10 +418,7 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
               SizedBox(height: 4),
               Text(
                 'Uploaded: ${_formatDate(item.uploadDate!)}',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 11,
-                ),
+                style: TextStyle(color: Colors.grey[600], fontSize: 11),
               ),
             ],
           ],
@@ -395,12 +435,12 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
         return ElevatedButton(
           onPressed: () => controller.resubmitItem(item),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFFDC143C),
+            backgroundColor: AppColors.primaryappcolor,
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           ),
           child: Text(
             'Resubmit',
-            style: TextStyle(color: Colors.white, fontSize: 12),
+            style: TextStyle(color: Colors.white, fontSize: 12.sp),
           ),
         );
       case ReviewStatus.approved:
@@ -487,13 +527,15 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
             ),
             Text(
               item.title,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 16),
-            _buildDetailRow('Type', item.type == ReviewItemType.document ? 'Document' : 'Vehicle Photo'),
+            _buildDetailRow(
+              'Type',
+              item.type == ReviewItemType.document
+                  ? 'Document'
+                  : 'Vehicle Photo',
+            ),
             _buildDetailRow('Status', _getStatusText(item.status)),
             if (item.uploadDate != null)
               _buildDetailRow('Upload Date', _formatDate(item.uploadDate!)),
@@ -503,10 +545,7 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
               SizedBox(height: 16),
               Text(
                 'Review Notes:',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
               ),
               SizedBox(height: 8),
               Container(
@@ -519,10 +558,7 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
                 ),
                 child: Text(
                   item.reviewNotes!,
-                  style: TextStyle(
-                    color: Colors.red[800],
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.red[800], fontSize: 14),
                 ),
               ),
             ],
@@ -536,7 +572,7 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
                     controller.resubmitItem(item);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFDC143C),
+                    backgroundColor:AppColors.primaryappcolor,
                     padding: EdgeInsets.symmetric(vertical: 12),
                   ),
                   child: Text(
@@ -572,12 +608,7 @@ class DocumentReviewScreen extends GetView<DocumentReviewController> {
             ),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            child: Text(value, style: TextStyle(fontWeight: FontWeight.w500)),
           ),
         ],
       ),

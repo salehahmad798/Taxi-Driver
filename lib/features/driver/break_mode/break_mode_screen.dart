@@ -1,87 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:taxi_driver/core/constants/app_colors.dart';
+import 'package:taxi_driver/core/widgets/custom_appbar.dart';
+import 'package:taxi_driver/core/widgets/primary_button.dart';
 import 'package:taxi_driver/features/driver/break_mode/break_mode_controller.dart';
+import 'package:taxi_driver/routes/app_routes.dart';
 
 class BreakModeScreen extends GetView<BreakModeController> {
-  const BreakModeScreen({Key? key}) : super(key: key);
+  const BreakModeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
-        ),
-        title: const Text(
-          'Break Mode',
-          style: TextStyle(color: Colors.black, fontSize: 18),
-        ),
-      ),
+      backgroundColor: AppColors.backgroundColor,
+      appBar: CustomAppBar(text: 'Break Mode'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Status Section
+            // ===================  Status Section ====================
             Center(
               child: Column(
                 children: [
-                  Obx(() => Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: controller.isOnBreak.value 
-                          ? Colors.orange[100] 
-                          : Colors.green[100],
-                      shape: BoxShape.circle,
+                  Obx(
+                    () => Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: controller.isOnBreak.value
+                            ? Colors.orange[100]
+                            : Colors.green[100],
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        controller.isOnBreak.value
+                            ? Icons.pause
+                            : Icons.play_circle_fill,
+                        size: 50,
+                        color: controller.isOnBreak.value
+                            ? Colors.orange[600]
+                            : Colors.green[600],
+                      ),
                     ),
-                    child: Icon(
-                      controller.isOnBreak.value 
-                          ? Icons.pause 
-                          : Icons.check,
-                      size: 50,
-                      color: controller.isOnBreak.value 
-                          ? Colors.orange[600] 
-                          : Colors.green[600],
-                    ),
-                  )),
+                  ),
                   const SizedBox(height: 16),
-                  Obx(() => Text(
-                    controller.isOnBreak.value ? 'On Break' : 'Available',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  Obx(
+                    () => Text(
+                      controller.isOnBreak.value ? 'On Break' : 'Available',
+                      style: TextStyle(
+                        fontSize: 24.sp,
+                        color: controller.isOnBreak.value
+                            ? Colors.orange[600]
+                            : Colors.green[600],
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  )),
+                  ),
                   const SizedBox(height: 8),
-                  Obx(() => Text(
-                    controller.breakStatusText,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
+                  Obx(
+                    () => Text(
+                      controller.breakStatusText,
+                      style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  )),
+                  ),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 40),
-            
-            // Quick Break Options
-            const Text(
+
+            // ============== Quick Break Options ===========
+            Text(
               'Quick Break Options',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            
+
             Row(
               children: [
                 Expanded(
@@ -89,7 +86,11 @@ class BreakModeScreen extends GetView<BreakModeController> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _buildQuickBreakButton('30 mins', 30, Icons.restaurant),
+                  child: _buildQuickBreakButton(
+                    '30 mins',
+                    30,
+                    Icons.restaurant,
+                  ),
                 ),
               ],
             ),
@@ -105,19 +106,16 @@ class BreakModeScreen extends GetView<BreakModeController> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 30),
-            
+
             // Custom Duration
             const Text(
               'Custom Duration',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             Row(
               children: [
                 Expanded(
@@ -140,66 +138,62 @@ class BreakModeScreen extends GetView<BreakModeController> {
                 ElevatedButton(
                   onPressed: controller.startCustomBreak,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[700],
+                    backgroundColor: AppColors.primaryappcolor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 12,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                   child: const Text('Start'),
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 8),
             Text(
               'Enter duration in minutes (1-480 min)',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 13.sp, color: Colors.grey[600]),
             ),
-            
+
             const SizedBox(height: 40),
-            
+
             // Recent Break Sessions
             const Text(
               'Recent Break Sessions',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             Obx(() {
               if (controller.breakSessions.isEmpty) {
-                return Container(
-                  padding: const EdgeInsets.all(40),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.history,
-                        size: 48,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No break sessions yet',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
+                return Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(40),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.history,
+                          size: 48.w,
+                          color: Colors.grey[400],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                        Text(
+                          'No break sessions yet',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }
-              
+
               return ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -211,7 +205,9 @@ class BreakModeScreen extends GetView<BreakModeController> {
                     child: ListTile(
                       leading: Icon(
                         Icons.pause_circle,
-                        color: session.isActive ? Colors.orange : Colors.grey,
+                        color: session.isActive
+                            ? AppColors.kprimaryColor
+                            : Colors.grey,
                       ),
                       title: Text(
                         '${session.duration} minutes break',
@@ -224,7 +220,7 @@ class BreakModeScreen extends GetView<BreakModeController> {
                           ? ElevatedButton(
                               onPressed: controller.endBreak,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red[700],
+                                backgroundColor: AppColors.kprimaryColor,
                                 foregroundColor: Colors.white,
                               ),
                               child: const Text('End'),
@@ -235,16 +231,16 @@ class BreakModeScreen extends GetView<BreakModeController> {
                 },
               );
             }),
-            
+
             const SizedBox(height: 30),
-            
-            // Break Mode Tips
+
+            //=================== Break Mode Tips ===============
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.blue[50],
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.blue[200]!),
+                // border: Border.all(color: Colors.blue[200]!),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,12 +259,25 @@ class BreakModeScreen extends GetView<BreakModeController> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _buildTipItem('You\'ll automatically go online when break time ends'),
-                  _buildTipItem('Take 15-30 min breaks for meals and short rests'),
+                  _buildTipItem(
+                    'You\'ll automatically go online when break time ends',
+                  ),
+                  _buildTipItem(
+                    'Take 15-30 min breaks for meals and short rests',
+                  ),
                   _buildTipItem('Use 2+ hour breaks for longer meal breaks'),
                   _buildTipItem('You can end your break early anytime'),
                 ],
               ),
+            ),
+            SizedBox(height: 10),
+            PrimaryButton(
+              text: 'Earning & History',
+
+              width: double.infinity,
+              onTap: () {
+                Get.toNamed(AppRoutes.earningsHistory);
+              },
             ),
           ],
         ),
@@ -277,52 +286,54 @@ class BreakModeScreen extends GetView<BreakModeController> {
   }
 
   Widget _buildQuickBreakButton(String label, int minutes, IconData icon) {
-    return Obx(() => InkWell(
-      onTap: () => controller.startQuickBreak(minutes),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        decoration: BoxDecoration(
-          color: controller.selectedQuickBreak.value == minutes
-              ? Colors.red[50]
-              : Colors.white,
-          border: Border.all(
+    return Obx(
+      () => InkWell(
+        onTap: () => controller.startQuickBreak(minutes),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          decoration: BoxDecoration(
             color: controller.selectedQuickBreak.value == minutes
-                ? Colors.red[300]!
-                : Colors.grey[300]!,
+                ? Colors.red[50]
+                : Colors.white,
+            border: Border.all(
+              color: controller.selectedQuickBreak.value == minutes
+                  ? Colors.red[300]!
+                  : Colors.grey[300]!,
+            ),
+            borderRadius: BorderRadius.circular(12),
           ),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: controller.selectedQuickBreak.value == minutes
-                    ? Colors.red[100]
-                    : Colors.grey[100],
-                shape: BoxShape.circle,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: controller.selectedQuickBreak.value == minutes
+                      ? Colors.red[100]
+                      : Colors.grey[100],
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: controller.selectedQuickBreak.value == minutes
+                      ? Colors.red[600]
+                      : Colors.grey[600],
+                ),
               ),
-              child: Icon(
-                icon,
-                color: controller.selectedQuickBreak.value == minutes
-                    ? Colors.red[600]
-                    : Colors.grey[600],
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: controller.selectedQuickBreak.value == minutes
+                      ? Colors.red[700]
+                      : Colors.black,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: controller.selectedQuickBreak.value == minutes
-                    ? Colors.red[700]
-                    : Colors.black,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildTipItem(String text) {
@@ -343,10 +354,7 @@ class BreakModeScreen extends GetView<BreakModeController> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.blue[700],
-              ),
+              style: TextStyle(fontSize: 14.sp, color: Colors.blue[700]),
             ),
           ),
         ],

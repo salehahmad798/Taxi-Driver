@@ -16,8 +16,8 @@ static const String skyImage = 'assets/app_images/image 121.png';
       static const b = 'assets/app_images/b.png';
 
 static const String allowLocation = 'assets/app_images/locationpermission.png';
-
-
+static const String requestFound = 'assets/app_images/Group 39345.png';
+static const String profile = 'assets/app_images/profile.png';
 
 //  ========================= app svg ======================
 static const String upperbg = 'assets/app_images/gradient bg.svg';

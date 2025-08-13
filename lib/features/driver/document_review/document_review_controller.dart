@@ -6,10 +6,12 @@ import 'package:taxi_driver/features/driver/data/models/review_models.dart';
 import 'package:taxi_driver/features/driver/data/providers/api_provider.dart';
 import 'dart:async';
 
+import 'package:taxi_driver/routes/app_routes.dart';
+
 class DocumentReviewController extends GetxController {
   final ApiProvider _apiProvider = Get.find<ApiProvider>();
 
-  // Observable variables
+  // ==================  Observable variables =================== 
   var documents = <ReviewItem>[].obs;
   var vehiclePhotos = <ReviewItem>[].obs;
   var overallStatus = ReviewStatus.underReview.obs;
@@ -17,7 +19,7 @@ class DocumentReviewController extends GetxController {
   var refreshing = false.obs;
   var autoRefreshEnabled = true.obs;
 
-  // Progress tracking
+  // ====================== Progress tracking ================
   var totalItems = 0.obs;
   var approvedItems = 0.obs;
   var rejectedItems = 0.obs;
@@ -42,7 +44,7 @@ class DocumentReviewController extends GetxController {
     try {
       isLoading.value = true;
       
-      // Load documents and photos in parallel
+      // ============== Load documents and photos in parallel ==================
       final results = await Future.wait([
         _apiProvider.getDocuments(),
         _apiProvider.getVehiclePhotos(),
@@ -51,7 +53,7 @@ class DocumentReviewController extends GetxController {
       final documentsResponse = results[0];
       final photosResponse = results[1];
 
-      // Process documents
+      // ==================== Process documents =========================
       if (documentsResponse.isOk && documentsResponse.body != null) {
         final List<dynamic> documentsJson = documentsResponse.body['documents'] ?? [];
         documents.value = documentsJson.map((json) {
@@ -71,7 +73,7 @@ class DocumentReviewController extends GetxController {
         }).toList();
       }
 
-      // Process vehicle photos
+      // =================== Process vehicle photos ==================
       if (photosResponse.isOk && photosResponse.body != null) {
         final List<dynamic> photosJson = photosResponse.body['photos'] ?? [];
         vehiclePhotos.value = photosJson.map((json) {
@@ -186,7 +188,7 @@ class DocumentReviewController extends GetxController {
       final response = await _apiProvider.resubmitDocument(item.id);
       
       if (response.isOk) {
-        // Update item status
+        //=================  Update item status ==================
         if (item.type == ReviewItemType.document) {
           final index = documents.indexWhere((doc) => doc.id == item.id);
           if (index != -1) {
@@ -234,19 +236,22 @@ class DocumentReviewController extends GetxController {
   }
 
   void proceedToNext() {
-    if (overallStatus.value == ReviewStatus.approved) {
-      Get.toNamed('/availability');
-    } else if (overallStatus.value == ReviewStatus.rejected) {
-      _showRejectionDialog();
-    } else {
-      Get.snackbar(
-        'Please Wait',
-        'Documents are still under review. Please wait for approval.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.orange[100],
-        colorText: Colors.orange[800],
-      );
-    }
+    // if (overallStatus.value == ReviewStatus.approved) {
+    //   Get.toNamed('/availability');
+    // } else if (overallStatus.value == ReviewStatus.rejected) {
+    //   _showRejectionDialog();
+    // } else {
+    //   Get.snackbar(
+    //     'Please Wait',
+    //     'Documents are still under review. Please wait for approval.',
+    //     snackPosition: SnackPosition.TOP,
+    //     backgroundColor: Colors.orange[100],
+    //     colorText: Colors.orange[800],
+    //   );
+    // }
+
+
+      Get.toNamed(AppRoutes.availabilityMain);
   }
 
   void _showRejectionDialog() {
