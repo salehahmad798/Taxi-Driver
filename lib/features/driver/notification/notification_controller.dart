@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:taxi_driver/features/driver/data/models/notification_model.dart';
-import 'package:taxi_driver/features/driver/data/services/api_service.dart';
+import 'package:taxi_driver/data/models/notification_model.dart';
+import 'package:taxi_driver/data/services/api_service.dart';
 
 class NotificationController extends GetxController {
   final ApiService _apiService = Get.find<ApiService>();

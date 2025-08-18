@@ -1,4 +1,4 @@
-class Validator {
+class ValidationService {
   /// Validate if a string is not empty ////////
   static String? validateRequiredField(String? value, {String fieldName = 'This field'}) {
     if (value == null || value.trim().isEmpty) {
@@ -114,4 +114,120 @@ class Validator {
       return 'Enter a valid date in the format $format';
     }
   }
+
+
+
+
+
+
+
+
+// Email validation
+  static bool isValidEmail(String email) {
+    if (email.isEmpty) return false;
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
+
+  // Phone validation
+  static bool isValidPhone(String phone) {
+    if (phone.isEmpty) return false;
+    // Remove all non-digit characters
+    String digitsOnly = phone.replaceAll(RegExp(r'\D'), '');
+    // Check if it has 10-15 digits
+    return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+  }
+
+  // Password validation
+  static bool isValidPassword(String password) {
+    if (password.isEmpty) return false;
+    // At least 8 characters, one uppercase, one lowercase, one digit
+    return password.length >= 8 &&
+           RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$').hasMatch(password);
+  }
+
+  // Name validation
+  static bool isValidName(String name) {
+    if (name.isEmpty) return false;
+    return name.trim().length >= 2 && 
+           RegExp(r'^[a-zA-Z\s]+$').hasMatch(name.trim());
+  }
+
+  // OTP validation
+  static bool isValidOtp(String otp) {
+    if (otp.isEmpty) return false;
+    return otp.length == 4 && RegExp(r'^\d{4}$').hasMatch(otp);
+  }
+
+  // Get email error message
+  static String? getEmailError(String email) {
+    if (email.isEmpty) return 'Email is required';
+    if (!isValidEmail(email)) return 'Please enter a valid email address';
+    return null;
+  }
+
+  // Get phone error message
+  static String? getPhoneError(String phone) {
+    if (phone.isEmpty) return 'Phone number is required';
+    if (!isValidPhone(phone)) return 'Please enter a valid phone number';
+    return null;
+  }
+
+  // Get password error message
+  static String? getPasswordError(String password) {
+    if (password.isEmpty) return 'Password is required';
+    if (password.length < 8) return 'Password must be at least 8 characters';
+    if (!RegExp(r'[A-Z]').hasMatch(password)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!RegExp(r'[a-z]').hasMatch(password)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!RegExp(r'\d').hasMatch(password)) {
+      return 'Password must contain at least one number';
+    }
+    return null;
+  }
+
+  // Get name error message
+  static String? getNameError(String name, String fieldName) {
+    if (name.isEmpty) return '$fieldName is required';
+    if (name.trim().length < 2) return '$fieldName must be at least 2 characters';
+    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name.trim())) {
+      return '$fieldName can only contain letters and spaces';
+    }
+    return null;
+  }
+
+  // Get OTP error message
+  static String? getOtpError(String otp) {
+    if (otp.isEmpty) return 'OTP is required';
+    if (otp.length != 4) return 'OTP must be 4 digits';
+    if (!RegExp(r'^\d{4}$').hasMatch(otp)) return 'OTP must contain only numbers';
+    return null;
+  }
+
+  // Format phone number
+  static String formatPhoneNumber(String phone) {
+    // Remove all non-digit characters
+    String digitsOnly = phone.replaceAll(RegExp(r'\D'), '');
+    
+    // Add country code if not present
+    if (digitsOnly.length == 10) {
+      digitsOnly = '92$digitsOnly'; // Pakistan country code
+    }
+    
+    // Add + prefix
+    if (!digitsOnly.startsWith('92')) {
+      digitsOnly = '92$digitsOnly';
+    }
+    
+    return '+$digitsOnly';
+  }
+
+  // Clean phone number (remove formatting)
+  static String cleanPhoneNumber(String phone) {
+    return phone.replaceAll(RegExp(r'\D'), '');
+  }
+
+  
 }

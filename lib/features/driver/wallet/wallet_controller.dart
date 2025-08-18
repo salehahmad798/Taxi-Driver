@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:taxi_driver/features/driver/data/services/api_service.dart';
+import 'package:taxi_driver/data/services/api_service.dart';
 
 class WalletController extends GetxController {
   final ApiService _apiService = Get.find<ApiService>();

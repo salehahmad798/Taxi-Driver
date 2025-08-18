@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:taxi_driver/core/constants/app_colors.dart';
-import 'package:taxi_driver/features/driver/data/models/review_models.dart';
+import 'package:taxi_driver/data/models/review_models.dart';
 import 'package:taxi_driver/features/driver/document_review/document_review_controller.dart';
 
 class DocumentReviewScreen extends GetView<DocumentReviewController> {

@@ -1,0 +1,113 @@
+class AuthResponse {
+  final String accessToken;
+  final String tokenType;
+  final User user;
+
+  AuthResponse({
+    required this.accessToken,
+    required this.tokenType,
+    required this.user,
+  });
+
+  factory AuthResponse.fromJson(Map<String, dynamic> json) {
+    return AuthResponse(
+      accessToken: json['access_token'] ?? '',
+      tokenType: json['token_type'] ?? 'Bearer',
+      user: User.fromJson(json['user'] ?? {}),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'access_token': accessToken,
+      'token_type': tokenType,
+      'user': user.toJson(),
+    };
+  }
+}
+
+class User {
+  final int id;
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String phone;
+  final int status;
+  final String? type;
+  final String avatar;
+  final String latitude;
+  final String longitude;
+  final String createdAt;
+
+  User({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.phone,
+    required this.status,
+    this.type,
+    required this.avatar,
+    required this.latitude,
+    required this.longitude,
+    required this.createdAt,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'] ?? 0,
+      firstName: json['first_name'] ?? '',
+      lastName: json['last_name'] ?? '',
+      email: json['email'] ?? '',
+      phone: json['phone'] ?? '',
+      status: json['status'] ?? 0,
+      type: json['type'],
+      avatar: json['avatar'] ?? '',
+      latitude: json['latitude'] ?? '0.0',
+      longitude: json['longitude'] ?? '0.0',
+      createdAt: json['created_at'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'first_name': firstName,
+      'last_name': lastName,
+      'email': email,
+      'phone': phone,
+      'status': status,
+      'type': type,
+      'avatar': avatar,
+      'latitude': latitude,
+      'longitude': longitude,
+      'created_at': createdAt,
+    };
+  }
+
+  String get fullName => '$firstName $lastName';
+}
+
+class Meta {
+  final String requestId;
+  final String timestamp;
+
+  Meta({
+    required this.requestId,
+    required this.timestamp,
+  });
+
+  factory Meta.fromJson(Map<String, dynamic> json) {
+    return Meta(
+      requestId: json['request_id'] ?? '',
+      timestamp: json['timestamp'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'request_id': requestId,
+      'timestamp': timestamp,
+    };
+  }
+}

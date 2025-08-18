@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:taxi_driver/features/driver/data/models/document_model.dart';
-import 'package:taxi_driver/features/driver/data/models/home_document_model.dart';
-import 'package:taxi_driver/features/driver/data/services/document_services.dart';
-import 'package:taxi_driver/features/driver/data/services/ride_service.dart';
+import 'package:taxi_driver/data/models/document_model.dart';
+import 'package:taxi_driver/data/models/home_document_model.dart';
+import 'package:taxi_driver/data/services/document_services.dart';
+import 'package:taxi_driver/data/services/ride_service.dart';
 import 'package:taxi_driver/features/driver/home/controller/drawer_controller.dart';
 import 'package:taxi_driver/features/driver/pickup/model/ride_request_model.dart';
 import 'package:taxi_driver/routes/app_routes.dart';

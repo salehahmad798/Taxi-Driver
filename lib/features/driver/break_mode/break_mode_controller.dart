@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:taxi_driver/features/driver/data/models/break_session_model.dart';
+import 'package:taxi_driver/data/models/break_session_model.dart';
 
 class BreakModeController extends GetxController {
   var isOnBreak = false.obs;

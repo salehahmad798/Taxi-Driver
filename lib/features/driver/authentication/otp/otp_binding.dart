@@ -6,6 +6,6 @@ import 'otp_controller.dart';
 class OtpBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<OtpController>(() => OtpController());
+    Get.lazyPut<OtpController>(() => OtpController(Get.find(), Get.find()));
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:taxi_driver/features/driver/data/models/home_document_model.dart';
+import 'package:taxi_driver/data/models/home_document_model.dart';
 
 class DocumentService {
   final String baseUrl = 'YOUR_API_BASE_URL';

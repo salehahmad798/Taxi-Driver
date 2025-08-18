@@ -1,6 +1,6 @@
 // 7. SERVICE INITIALIZATION (app/data/services/service_init.dart)
 import 'package:get/get.dart';
-import 'package:taxi_driver/features/driver/data/services/document_services.dart';
+import 'package:taxi_driver/data/services/document_services.dart';
 import 'chat_service.dart';
 import 'ride_service.dart';
 import 'location_service.dart';

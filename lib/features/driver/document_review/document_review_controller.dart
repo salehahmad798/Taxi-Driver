@@ -1,9 +1,10 @@
 
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:taxi_driver/features/driver/data/models/document_model.dart';
-import 'package:taxi_driver/features/driver/data/models/review_models.dart';
-import 'package:taxi_driver/features/driver/data/providers/api_provider.dart';
+import 'package:taxi_driver/data/models/document_model.dart';
+import 'package:taxi_driver/data/models/review_models.dart';
+import 'package:taxi_driver/data/providers/api_provider.dart';
+import 'package:taxi_driver/data/services/api_service.dart';
 import 'dart:async';
 
 import 'package:taxi_driver/routes/app_routes.dart';
@@ -47,7 +48,7 @@ class DocumentReviewController extends GetxController {
       // ============== Load documents and photos in parallel ==================
       final results = await Future.wait([
         _apiProvider.getDocuments(),
-        _apiProvider.getVehiclePhotos(),
+        // _apiProvider.getVehiclePhotos(),
       ]);
 
       final documentsResponse = results[0];

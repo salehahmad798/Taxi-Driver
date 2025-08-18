@@ -5,6 +5,6 @@ import 'package:taxi_driver/features/driver/authentication/signup/signup_control
 class SignupBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<SignupController>(() => SignupController());
+    Get.lazyPut<SignupController>(() => SignupController(Get.find()));
   }
 }

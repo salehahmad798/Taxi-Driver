@@ -1,6 +1,6 @@
 
 import 'package:get/get.dart';
-import 'package:taxi_driver/features/driver/data/providers/api_provider.dart';
+import 'package:taxi_driver/data/providers/api_provider.dart';
 import 'package:taxi_driver/features/driver/vehicle_details/vehicle_details_controller.dart';
 
 class VehicleDetailsBinding extends Bindings {

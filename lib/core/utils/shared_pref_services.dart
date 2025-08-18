@@ -1,68 +1,61 @@
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'dart:convert';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import '../../data/models/auth_models.dart';
 
+// class StorageService {
+//   static const _keyIsLoggedIn = 'is_logged_in';
+//   static const _keyAccessToken = 'access_token';
+//   static const _keyTokenType = 'token_type';
+//   static const _keyUserData = 'user_data';
+//   static const _keyIsFirstTime = 'is_first_time';
+//   static const _keyPhoneNumber = 'phone_number';
 
-class SharePrefServices {
-  static saveLoggInUserIsGenral(bool val) async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setBool('saveLoggInUserIsGenral', val);
-  }
+//   Future<bool> isFirstTimeUser() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     return prefs.getBool(_keyIsFirstTime) ?? true;
+//   }
 
-  static getLoggInUserIsGenral() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    return pref.getBool('saveLoggInUserIsGenral');
-  }
+//   Future<void> setFirstTimeUser(bool isFirstTime) async {
+//     final prefs = await SharedPreferences.getInstance();
+//     await prefs.setBool(_keyIsFirstTime, isFirstTime);
+//   }
 
-  static saveAuthToken(String val) async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setString('authToken', val);
-  }
+//   Future<bool> isLoggedIn() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     return prefs.getBool(_keyIsLoggedIn) ?? false;
+//   }
 
-  static getAuthToken() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    return pref.getString('authToken');
-  }
+//   Future<void> setLoggedIn(bool value) async {
+//     final prefs = await SharedPreferences.getInstance();
+//     await prefs.setBool(_keyIsLoggedIn, value);
+//   }
 
-  static saveUserData(data) async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setString('userData', data);
-  }
+//   Future<void> saveAuthData(AuthResponse data) async {
+//     final prefs = await SharedPreferences.getInstance();
+//     await prefs.setBool(_keyIsLoggedIn, true);
+//     await prefs.setString(_keyAccessToken, data.accessToken);
+//     await prefs.setString(_keyTokenType, data.tokenType);
+//     await prefs.setString(_keyUserData, jsonEncode(data.user.toJson()));
+//     await prefs.setString(_keyPhoneNumber, data.user.phone);
+//     await prefs.setBool(_keyIsFirstTime, false);
+//   }
 
-  static saveServiceProviderUserData(data) async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setString('serviceProviderUserDetail', data);
-  }
+//   Future<String?> getAccessToken() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     return prefs.getString(_keyAccessToken);
+//   }
 
-  static getUserData() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    var userRaw = pref.getString("userData");
-    if (userRaw != null) {
-      try {
-        Map<String, dynamic> userJson = jsonDecode(userRaw);
-        // return GeneralUserModel.fromJson(userJson);
-      } catch (e) {
-        print("Error decoding user data: $e"); 
-        return null;
-      }
-    }
-    else {
-      return null;
-    }
-  }
+//   Future<String?> getTokenType() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     return prefs.getString(_keyTokenType);
+//   }
 
-   static getServiceProviderUserData() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    var userRaw = pref.getString("serviceProviderUserDetail");
-
-    if (userRaw != null) {
-      try {
-        Map<String, dynamic> userJson = jsonDecode(userRaw);
-        // return ServiceProviderUserModel.fromJson(userJson);
-      } catch (e) {
-        print("Error decoding user data: $e");
-        return null;
-      }
-    }
-    return null;
-  }
-}
+//   Future<void> clearUserData() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     await prefs.remove(_keyAccessToken);
+//     await prefs.remove(_keyTokenType);
+//     await prefs.remove(_keyUserData);
+//     await prefs.remove(_keyPhoneNumber);
+//     await prefs.setBool(_keyIsLoggedIn, false);
+//   }
+// }

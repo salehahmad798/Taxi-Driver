@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:taxi_driver/core/constants/app_colors.dart';
-import 'package:taxi_driver/features/driver/data/models/document_model.dart';
+import 'package:taxi_driver/data/models/document_model.dart';
 // import 'package:taxi_driver/features/driver/data/providers/api_provider.dart';
 // import 'dart:io';
 

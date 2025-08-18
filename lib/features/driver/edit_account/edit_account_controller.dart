@@ -1,26 +1,29 @@
+// lib/features/driver/account/edit_account/edit_account_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:taxi_driver/features/driver/data/models/user_model.dart';
-import 'package:taxi_driver/features/driver/data/services/api_service.dart';
-import 'package:taxi_driver/features/driver/data/services/storage_service.dart';
+import 'package:taxi_driver/data/models/user_model.dart';
+import 'package:taxi_driver/data/services/api_service.dart';
+import 'package:taxi_driver/data/services/storage_service.dart';
 
 class EditAccountController extends GetxController {
   final ApiService _apiService = Get.find<ApiService>();
   final StorageService _storage = Get.find<StorageService>();
 
+  /// Form & Controllers
   final formKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
 
-  final RxBool isLoading = false.obs;
-  final RxString profileImage = ''.obs;
+  /// State
+  final isLoading = false.obs;
+  final profileImage = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-    
-    // Get user data from arguments or storage
+
+    /// Try to get user from navigation arguments
     final UserModel? user = Get.arguments;
     if (user != null) {
       nameController.text = user.name ?? '';
@@ -28,10 +31,11 @@ class EditAccountController extends GetxController {
       phoneController.text = user.phone ?? '';
       profileImage.value = user.profileImage ?? '';
     } else {
-      nameController.text = _storage.userName ?? '';
-      emailController.text = _storage.userEmail ?? '';
-      phoneController.text = _storage.userPhone ?? '';
-      profileImage.value = _storage.userImage ?? '';
+      /// Fallback to stored user data
+      // nameController.text = _storage.userName ?? '';
+      // emailController.text = _storage.userEmail ?? '';
+      // phoneController.text = _storage.userPhone ?? '';
+      // profileImage.value = _storage.userImage ?? '';
     }
   }
 
@@ -43,11 +47,12 @@ class EditAccountController extends GetxController {
     super.onClose();
   }
 
+  /// Update Profile API call
   Future<void> updateProfile() async {
     if (!formKey.currentState!.validate()) return;
 
     try {
-      isLoading(true);
+      isLoading.value = true;
 
       final updatedUser = UserModel(
         name: nameController.text.trim(),
@@ -57,15 +62,17 @@ class EditAccountController extends GetxController {
       );
 
       final success = await _apiService.updateUserProfile(updatedUser);
-      
-      if (success) {
-        // Update storage
-        _storage.userName = updatedUser.name;
-        _storage.userEmail = updatedUser.email;
-        _storage.userPhone = updatedUser.phone;
-        _storage.userImage = updatedUser.profileImage;
 
+      if (success) {
+        /// Save changes locally
+        // _storage.userName = updatedUser.name;
+        // _storage.userEmail = updatedUser.email;
+        // _storage.userPhone = updatedUser.phone;
+        // _storage.userImage = updatedUser.profileImage;
+        
+        /// Go back with result
         Get.back(result: updatedUser);
+
         Get.snackbar(
           'Success',
           'Profile updated successfully',
@@ -88,10 +95,11 @@ class EditAccountController extends GetxController {
         colorText: Colors.white,
       );
     } finally {
-      isLoading(false);
+      isLoading.value = false;
     }
   }
 
+  /// Image Picker (to implement later)
   void selectProfileImage() {
     // TODO: Implement image picker
     Get.snackbar('Info', 'Image picker feature coming soon');

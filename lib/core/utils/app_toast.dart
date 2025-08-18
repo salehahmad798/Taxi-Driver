@@ -22,7 +22,6 @@ class AppToast {
       backgroundColor: Colors.redAccent ,
       colorText: Colors.white,
       maxWidth: Get.size.width * 0.8,
-      // margin: EdgeInsets.all(kHorizontalSpacing)
     );
   }
 
@@ -33,7 +32,6 @@ class AppToast {
       backgroundColor: AppColors.kprimaryColor,
       colorText: AppColors.backgroundColor,
       maxWidth: Get.size.width * 0.9,
-      // margin: EdgeInsets.all(kHorizontalSpacing)
     );
   }
 }

@@ -93,3 +93,19 @@
 //     await _notifications.cancelAll();
 //   }
 // }
+
+
+import 'package:taxi_driver/core/constants/network_constants.dart';
+import 'package:taxi_driver/data/models/notification_model.dart';
+import 'package:taxi_driver/data/services/api_client.dart';
+
+class NotificationService {
+  final ApiClient _api;
+  NotificationService(this._api);
+
+  Future<List<NotificationModel>> getNotifications() async {
+    final res = await _api.get(NetworkConstants.notifications);
+    final list = (res['data'] as List?) ?? [];
+    return list.map((e) => NotificationModel.fromJson(e)).toList();
+  }
+}

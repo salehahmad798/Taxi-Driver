@@ -79,7 +79,7 @@ class AppPages {
     // ========== driver login ======
     GetPage(
       name: AppRoutes.login,
-      page: () => const LoginScreen(),
+      page: () =>  LoginScreen(),
       binding: LoginBinding(),
     ),
 

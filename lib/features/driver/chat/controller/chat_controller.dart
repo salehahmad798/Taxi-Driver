@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:taxi_driver/features/driver/data/models/message_model.dart';
-import 'package:taxi_driver/features/driver/data/services/chat_service.dart';
+import 'package:taxi_driver/data/models/message_model.dart';
+import 'package:taxi_driver/data/services/chat_service.dart';
 import 'package:taxi_driver/features/driver/pickup/model/ride_request_model.dart';
 
 class ChatController extends GetxController {

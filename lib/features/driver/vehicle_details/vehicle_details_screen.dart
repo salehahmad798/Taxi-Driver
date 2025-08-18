@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:taxi_driver/core/constants/app_colors.dart';
 import 'package:taxi_driver/core/widgets/show_help_dialog.dart';
-import 'package:taxi_driver/features/driver/data/models/vehicle_photo_model.dart';
+import 'package:taxi_driver/data/models/vehicle_photo_model.dart';
 import 'dart:io';
 import 'package:taxi_driver/features/driver/vehicle_details/vehicle_details_controller.dart';
 

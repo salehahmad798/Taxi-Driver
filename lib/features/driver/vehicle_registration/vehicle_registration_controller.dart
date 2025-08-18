@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:taxi_driver/features/driver/data/models/vehicle_model.dart';
-import 'package:taxi_driver/features/driver/data/providers/api_provider.dart';
+import 'package:taxi_driver/data/models/vehicle_model.dart';
+import 'package:taxi_driver/data/providers/api_provider.dart';
 
 class VehicleRegistrationController extends GetxController {
   final ApiProvider _apiProvider = Get.find<ApiProvider>();
@@ -105,7 +105,9 @@ void setFuelType(String type) {
         expiryDate: expiryDate.value?.toIso8601String(),
       );
 
-      final response = await _apiProvider.registerVehicle(vehicle);
+      final response = await _apiProvider.registerVehicle(
+         vehicle.toJson(),
+      );
 
       if (response.isOk) {
         Get.snackbar('Success', 'Vehicle registered successfully');

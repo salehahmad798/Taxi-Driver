@@ -2,10 +2,10 @@
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:taxi_driver/features/driver/data/models/vehicle_photo_model.dart';
+import 'package:taxi_driver/data/models/vehicle_photo_model.dart';
 import 'dart:io';
 
-import 'package:taxi_driver/features/driver/data/providers/api_provider.dart';
+import 'package:taxi_driver/data/providers/api_provider.dart';
 
 class VehicleDetailsController extends GetxController {
   final ApiProvider _apiProvider = Get.find<ApiProvider>();
@@ -52,8 +52,8 @@ class VehicleDetailsController extends GetxController {
   Future<void> loadExistingPhotos() async {
     try {
       isLoading.value = true;
-      final response = await _apiProvider.getVehiclePhotos();
-
+      // final response = await _apiProvider.getVehiclePhotos();
+      final response = await _apiProvider.getVehiclePhotos( '12345'); // Replace with actual vehicle ID
       if (response.isOk && response.body != null) {
         final List<dynamic> photosJson = response.body['photos'] ?? [];
         final existingPhotos = photosJson
@@ -127,8 +127,13 @@ class VehicleDetailsController extends GetxController {
       //  ================== Simulate progress for better UX ======================
       _simulateUploadProgress();
 
-      final response = await _apiProvider.uploadVehiclePhoto(filePath, photoType);
+      // final response = await _apiProvider.uploadVehiclePhoto(filePath, photoType, );
 
+ final response = await _apiProvider.uploadVehiclePhoto(
+         filePath,
+         photoType,
+         '12345', 
+      );
       if (response.isOk) {
         final photoData = response.body;
         updatePhotoWithServerData(photoType, photoData, filePath);
