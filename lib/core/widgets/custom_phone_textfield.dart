@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-
 import 'package:taxi_driver/core/constants/app_colors.dart';
 
 class PhonePickerField extends StatefulWidget {
@@ -27,9 +25,10 @@ class PhonePickerField extends StatefulWidget {
   final Color themeColor;
   final Color backcolor;
   final bool enabledBorder;
-  final void Function(String)? onChange;
-  final void Function(String)? onComplete;
-  final void Function(String?)? onSaved;
+  final void Function(String fullPhone)? onChange;      // returns full phone number
+  final void Function(String fullPhone)? onComplete;
+  final void Function(String? fullPhone)? onSaved;
+  final void Function(String dialCode)? onDialCodeChanged; // <-- NEW callback for dialCode
   final VoidCallback? onEditingComplete;
   final double? textFieldheight;
   final TextAlign? textAlign;
@@ -69,6 +68,7 @@ class PhonePickerField extends StatefulWidget {
     this.textFieldheight,
     this.textAlign,
     this.isoCode,
+    this.onDialCodeChanged, // optional
   }) : super(key: key);
 
   @override
@@ -88,28 +88,26 @@ class _PhonePickerFieldState extends State<PhonePickerField> {
           width: widget.width ?? 310.w,
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           decoration: BoxDecoration(
-            // color: AppColors.textfieldcolor,
             color: Colors.white,
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: InternationalPhoneNumberInput(
             onInputChanged: (PhoneNumber number) {
-              if (widget.onChange != null) {
-                widget.onChange!(number.phoneNumber ?? '');
-              }
+              // return full phone number
+              widget.onChange?.call(number.phoneNumber ?? '');
+
+              // return dialCode separately
+              widget.onDialCodeChanged?.call(number.dialCode ?? '');
             },
 
-         
             selectorConfig: const SelectorConfig(
               selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
               useBottomSheetSafeArea: true,
               showFlags: true,
-              setSelectorButtonAsPrefixIcon:
-                  true, 
+              setSelectorButtonAsPrefixIcon: true,
               leadingPadding: 0,
             ),
 
-            // ignoreBlank: false,
             autoValidateMode: AutovalidateMode.disabled,
             selectorTextStyle: TextStyle(
               color: AppColors.primarybackColor.withOpacity(0.8),
@@ -125,30 +123,8 @@ class _PhonePickerFieldState extends State<PhonePickerField> {
             ),
             initialValue: PhoneNumber(isoCode: widget.isoCode ?? 'NG'),
             textFieldController: widget.controller,
-            // formatInput: true,
             keyboardType: widget.keyboardType,
 
-            // inputDecoration: InputDecoration(
-            //   border: InputBorder.none,
-            //   fillColor: Colors.white,
-            //   filled: true,
-            //   contentPadding: const EdgeInsets.only(left: 10, bottom: 0),
-            //   hintText: widget.hintText,
-            //   hintStyle: TextStyle(
-            //     color: AppColors.primarybackColor.withOpacity(0.8),
-            //     fontWeight: FontWeight.w400,
-            //     fontSize: 16.sp,
-            //     fontFamily: 'Poppins',
-            //   ),
-            //   suffixIcon: widget.hasSuffix
-            //       ? InkWell(
-            //           onTap: widget.suffixIconFunction,
-            //           child: widget.suffixIcon ?? const Icon(Icons.phone),
-            //         )
-            //       : const SizedBox(),
-            //   prefixIcon: widget.hasPreffix ? widget.preffixIcon : null,
-            //   isDense: true,
-            // ),
             inputDecoration: InputDecoration(
               border: InputBorder.none,
               fillColor: Colors.white,
@@ -171,16 +147,16 @@ class _PhonePickerFieldState extends State<PhonePickerField> {
             ),
 
             onSaved: (PhoneNumber number) {
-              if (widget.onSaved != null) {
-                widget.onSaved!(number.phoneNumber);
-              }
+              widget.onSaved?.call(number.phoneNumber);
+              widget.onDialCodeChanged?.call(number.dialCode ?? '');
             },
+
             validator: (value) {
               if (value == null || value.isEmpty) {
                 setState(() {
                   error = 'Phone is required';
                 });
-                return;
+                return null;
               } else {
                 setState(() {
                   error = '';
@@ -192,7 +168,7 @@ class _PhonePickerFieldState extends State<PhonePickerField> {
             textAlign: widget.textAlign ?? TextAlign.start,
           ),
         ),
-        error.isNotEmpty ? SizedBox(height: 5) : SizedBox.shrink(),
+        error.isNotEmpty ? const SizedBox(height: 5) : const SizedBox.shrink(),
         error.isNotEmpty
             ? Padding(
                 padding: const EdgeInsets.only(left: 8),

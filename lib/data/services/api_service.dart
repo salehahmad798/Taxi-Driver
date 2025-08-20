@@ -418,12 +418,12 @@ class ApiService extends GetxService {
 
   ApiService(ApiClient find);
 
-  Future<ApiResponse<AuthResponse>> registerDriver({
+  Future<ApiResponse<AuthResponse>> registerDriver(Map<String, Object?> body, {
     required String firstName,
     required String lastName,
     required String email,
     required String phone_number,
-    required String password,
+    // required String password,
     required double latitude,
     required double longitude,
   }) async {
@@ -436,7 +436,7 @@ class ApiService extends GetxService {
           'last_name': lastName,
           'email': email,
           'phone_number': phone_number,
-          'password': password,
+          // 'password': password,
           'latitude': latitude.toString(),
           'longitude': longitude.toString(),
         }),

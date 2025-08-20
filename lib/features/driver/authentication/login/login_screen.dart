@@ -227,19 +227,28 @@ class LoginScreen extends StatelessWidget {
 
               /// Phone Field
               PhonePickerField(
+                hintText: "phone number",
                 width: double.infinity,
                 controller: loginController.phone,
-                hintText: 'phone number',
+                isoCode: "PK",
+                onChange: (fullPhone) {
+                  print("Full Phone: $fullPhone"); // +923001234567
+                },
+                onDialCodeChanged: (dialCode) {
+                  print("Dial Code: $dialCode"); // +92
+                },
               ),
-              Obx(() => loginController.phoneError.value != null
-                  ? Padding(
-                      padding: EdgeInsets.only(top: 5.h),
-                      child: Text(
-                        loginController.phoneError.value!,
-                        style: TextStyle(color: Colors.red, fontSize: 12.sp),
-                      ),
-                    )
-                  : const SizedBox.shrink()),
+              Obx(
+                () => loginController.phoneError.value != null
+                    ? Padding(
+                        padding: EdgeInsets.only(top: 5.h),
+                        child: Text(
+                          loginController.phoneError.value!,
+                          style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
 
               SizedBox(height: 20.h),
 

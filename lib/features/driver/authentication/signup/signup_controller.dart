@@ -1,175 +1,202 @@
 import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:taxi_driver/core/utils/validators.dart';
+import 'package:taxi_driver/core/utils/app_toast.dart';
 import 'package:taxi_driver/data/services/api_service.dart';
 import 'package:taxi_driver/routes/app_routes.dart';
-import 'package:flutter/material.dart';
 
 class SignupController extends GetxController {
-  final ApiService apiService;
-
-  SignupController(this.apiService);
-
-  final isLoading = false.obs;
-  final countryCode = '+92'.obs; // Default country code PK
-
+  // Form controllers
   final firstName = TextEditingController();
   final lastName = TextEditingController();
   final email = TextEditingController();
-  final phone_number = TextEditingController();
-  final password = TextEditingController();
+  final phoneNumberController = TextEditingController(); // without dial code
+  // final passwordController = TextEditingController();
 
+  // Validation errors
   final firstNameError = RxnString();
   final lastNameError = RxnString();
   final emailError = RxnString();
   final phoneError = RxnString();
-  final passwordError = RxnString();
   final generalError = RxnString();
 
-  String get fullPhoneNumber => ValidationService.formatPhoneNumber(
-    '${countryCode.value}${phone_number.text.trim()}',
-  );
+  // State
+  final isLoading = false.obs;
+  double? latitude;
+  double? longitude;
+
+  /// Dial code + number → full international phone number
+  String fullPhoneNumber = '';
+  String dialCode = "+92";
+
+  SignupController(ApiService find); // default Pakistan
+
+  @override
+  void onInit() {
+    super.onInit();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      _requestLocationPermission(Get.context!);
+    });
+  }
+
+  // inside SignupController
+  void setPhoneNumber(String number, String dial) {
+    fullPhoneNumber = number; // e.g. +923001234567
+    dialCode = dial; // e.g. +92
+    log("📱 Full Phone: $fullPhoneNumber | Dial code: $dial");
+  }
+
+  Future<void> _requestLocationPermission(BuildContext context) async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showLocationDialog("Location services are disabled.");
+      return;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        _showLocationDialog("Location permission denied.");
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      _showLocationDialog(
+        "Location permission permanently denied.\nEnable it from app settings.",
+      );
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    latitude = position.latitude;
+    longitude = position.longitude;
+    log("📍 User location: $latitude, $longitude");
+  }
+
+  void _showLocationDialog(String message) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Location Permission'),
+        content: Text(message),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('OK')),
+        ],
+      ),
+    );
+  }
+
+  /// Called from UI button
+  Future<void> register() async {
+    // Clear errors first
+    firstNameError.value = null;
+    lastNameError.value = null;
+    emailError.value = null;
+    phoneError.value = null;
+    generalError.value = null;
+
+    final firstNameText = firstName.text.trim();
+    final lastNameText = lastName.text.trim();
+    final emailText = email.text.trim();
+    // final passwordText = passwordController.text.trim();
+
+    if (firstNameText.isEmpty) firstNameError.value = "First name is required";
+    if (lastNameText.isEmpty) lastNameError.value = "Last name is required";
+    if (emailText.isEmpty) emailError.value = "Email is required";
+    if (fullPhoneNumber.isEmpty) phoneError.value = "Phone number is required";
+    // if (passwordText.isEmpty) generalError.value = "Password is required";
+
+    if (firstNameError.value != null ||
+        lastNameError.value != null ||
+        emailError.value != null ||
+        phoneError.value != null ||
+        generalError.value != null) {
+      return;
+    }
+
+    if (latitude == null || longitude == null) {
+      generalError.value = "Please allow location access before signing up.";
+      return;
+    }
+
+    isLoading.value = true;
+
+    try {
+      final response = await ApiService(Get.find()).registerDriver(
+        firstName: firstNameText,
+        lastName: lastNameText,
+        email: emailText,
+        phone_number: fullPhoneNumber,
+        // password: passwordText,
+        latitude: latitude!,
+        longitude: longitude!,
+        {}, // keep if ApiService requires this
+      );
+
+      log("📥 Signup response: ${response.message}");
+
+      if (response.success) {
+        AppToast.successToast("Success", response.message);
+        log("✅ Signup successful: ${response.message}");
+
+        Get.toNamed(
+          AppRoutes.otp,
+          arguments: {"phone_number": fullPhoneNumber},
+        );
+      } else {
+        try {
+          if (response.errors != null && response.errors!.isNotEmpty) {
+            final errors = response.errors!; 
+            final firstKey = errors.keys.first;
+            final firstErrorMessage = (errors[firstKey] as List).first;
+
+            switch (firstKey) {
+              case "first_name":
+                firstNameError.value = firstErrorMessage;
+                break;
+              case "last_name":
+                lastNameError.value = firstErrorMessage;
+                break;
+              case "email":
+                emailError.value = firstErrorMessage;
+                break;
+              case "phone_number":
+                phoneError.value = firstErrorMessage;
+                break;
+              default:
+                generalError.value = firstErrorMessage;
+            }
+
+            AppToast.failToast(firstErrorMessage);
+          } else {
+            generalError.value = response.message;
+            AppToast.failToast(response.message);
+          }
+        } catch (e) {
+          generalError.value = "Something went wrong.";
+          AppToast.failToast("Something went wrong.");
+        }
+      }
+    } catch (e) {
+      generalError.value = e.toString();
+      Get.snackbar("Error", e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   @override
   void onClose() {
     firstName.dispose();
     lastName.dispose();
     email.dispose();
-    phone_number.dispose();
-    password.dispose();
+    phoneNumberController.dispose();
+    // passwordController.dispose();
     super.onClose();
-  }
-
-  Future<Position?> _getLocation() async {
-    try {
-      if (!await Geolocator.isLocationServiceEnabled()) return null;
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) return null;
-      }
-      if (permission == LocationPermission.deniedForever) return null;
-
-      return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-    } catch (e) {
-      log('Location error: $e');
-      return null;
-    }
-  }
-
-  bool _validateFields() {
-    firstNameError.value = ValidationService.getNameError(
-      firstName.text.trim(),
-      'First name',
-    );
-    lastNameError.value = ValidationService.getNameError(
-      lastName.text.trim(),
-      'Last name',
-    );
-    emailError.value = ValidationService.getEmailError(email.text.trim());
-    phoneError.value = ValidationService.getPhoneError(
-      phone_number.text.trim(),
-    );
-    passwordError.value = ValidationService.getPasswordError(
-      password.text.trim(),
-    );
-    generalError.value = null;
-
-    return firstNameError.value == null &&
-        lastNameError.value == null &&
-        emailError.value == null &&
-        phoneError.value == null &&
-        passwordError.value == null;
-  }
-
-  Future<void> register() async {
-    if (!_validateFields()) {
-      log(
-        'Validation failed: '
-        'firstName=${firstName.text}, lastName=${lastName.text}, email=${email.text}, phone=${fullPhoneNumber}',
-      );
-      return;
-    }
-
-    isLoading.value = true;
-    log('Starting registration for phone: $fullPhoneNumber');
-
-    try {
-      final position = await _getLocation();
-      log(
-        'Location retrieved: lat=${position?.latitude}, lng=${position?.longitude}',
-      );
-
-      final resp = await apiService.registerDriver(
-        firstName: firstName.text.trim(),
-        lastName: lastName.text.trim(),
-        email: email.text.trim(),
-        phone_number: fullPhoneNumber,
-        password: password.text.trim(),
-        latitude: position?.latitude ?? 31.5204,
-        longitude: position?.longitude ?? 74.3587,
-      );
-
-      if (resp.success) {
-        log('Registration success: ${resp.message}');
-        Get.snackbar(
-          'Success',
-          resp.message,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-
-        Get.toNamed(
-          AppRoutes.otp,
-          arguments: {'phone': fullPhoneNumber.trim()},
-        );
-
-        // Clear all signup fields
-        firstName.clear();
-        lastName.clear();
-        email.clear();
-        phone_number.clear();
-        password.clear();
-      } else {
-        // Handle API validation errors
-        if (resp.errors != null) {
-          log('API Validation Errors: ${resp.errors}');
-          emailError.value = resp.errors?['email'] != null
-              ? resp.errors!['email'][0]
-              : null;
-          phoneError.value = resp.errors?['phone_number'] != null
-              ? resp.errors!['phone_number'][0]
-              : null;
-
-          // You can also set generalError for other API messages
-          generalError.value = resp.message;
-        } else {
-          generalError.value = resp.message ?? 'Registration failed';
-        }
-
-        log('Registration failed: ${generalError.value}');
-        Get.snackbar(
-          'Error',
-          generalError.value ?? 'Registration failed',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-      }
-    } catch (e) {
-      generalError.value = 'An error occurred during registration';
-      log('Registration exception: $e');
-      Get.snackbar(
-        'Error',
-        generalError.value!,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-    } finally {
-      isLoading.value = false;
-    }
   }
 }

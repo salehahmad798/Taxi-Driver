@@ -101,12 +101,6 @@ class OtpController extends GetxController {
     super.onInit();
   }
 
-  @override
-  void onClose() {
-    otpController.dispose();
-    super.onClose();
-  }
-
   bool _validateOtp() {
     otpError.value = null;
     if (otpController.text.trim().isEmpty) {
@@ -115,79 +109,48 @@ class OtpController extends GetxController {
     }
     return true;
   }
-Future<void> verifyOtp() async {
-  if (!_validateOtp()) return;
 
-  isOtpLoading.value = true;
-  generalError.value = null;
-  otpError.value = null;
+  Future<void> verifyOtp() async {
+    if (!_validateOtp()) return;
 
-  try {
-    final resp = await apiService.verifyOtp(
-      phone: phone,
-      otp: otpController.text.trim(),
-    );
+    isOtpLoading.value = true;
+    generalError.value = null;
+    otpError.value = null;
 
-    if (resp.success) {
-      if (resp.data != null) {
-        await storageService.saveRefreshToken(resp.data!.tokenType);
-        otpController.clear();
-        Get.offAllNamed(AppRoutes.home);
+    try {
+      final resp = await apiService.verifyOtp(
+        phone: phone,
+        otp: otpController.text.trim(),
+      );
+
+      if (resp.success) {
+        if (resp.data != null) {
+          await storageService.saveRefreshToken(resp.data!.tokenType);
+          otpController.clear();
+          Get.offAllNamed(AppRoutes.home);
+        } else {
+          generalError.value = 'No data received';
+        }
       } else {
-        generalError.value = 'No data received';
-      }
-    } else {
-      // Handle validation errors
-      if (resp.errors != null) {
-        if (resp.errors?['phone_number'] != null) {
-          generalError.value = resp.errors?['phone_number'][0];
-        } else if (resp.errors?['otp'] != null) {
-          otpError.value = resp.errors?['otp'][0];
+        // Handle validation errors
+        if (resp.errors != null) {
+          if (resp.errors?['otp'] != null) {
+            otpError.value = resp.errors?['otp'][0];
+          } else if (resp.errors?['phone_number'] != null) {
+            generalError.value = resp.errors?['phone_number'][0];
+          } else {
+            generalError.value = resp.message ?? 'Verification failed';
+          }
         } else {
           generalError.value = resp.message ?? 'Verification failed';
         }
-      } else {
-        generalError.value = resp.message ?? 'Verification failed';
       }
+    } catch (e) {
+      generalError.value = e.toString();
+    } finally {
+      isOtpLoading.value = false;
     }
-  } catch (e) {
-    generalError.value = e.toString();
-  } finally {
-    isOtpLoading.value = false;
   }
-}
-
-  // Future<void> verifyOtp() async {
-  //   if (!_validateOtp()) return;
-
-  //   isOtpLoading.value = true;
-  //   generalError.value = null;
-
-  //   try {
-  //     final resp = await apiService.verifyOtp(
-  //       phone: phone,
-  //       otp: otpController.text.trim(),
-  //     );
-
-  //     if (resp.success) {
-  //       if (resp.data != null) {
-  //         await storageService.saveRefreshToken(resp.data!.tokenType);
-  //         otpController.clear(); // Clear OTP field after success
-  //         Get.offAllNamed(AppRoutes.home);
-  //       } else {
-  //         generalError.value = 'No data received';
-  //       }
-  //     } else {
-  //       generalError.value = resp.message ?? 'Verification failed';
-  //     }
-  //   } catch (e) {
-  //     generalError.value = e.toString();
-  //   } finally {
-  //     isOtpLoading.value = false;
-  //   }
-  // }
-
-
 
   Future<void> resendOtp() async {
     if (isResendLoading.value) return;

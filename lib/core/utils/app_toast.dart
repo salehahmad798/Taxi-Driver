@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:taxi_driver/core/constants/app_colors.dart';
 
 class AppToast {
-  static successToast(msg) {
+  static successToast(msg, String message) {
     return Get.snackbar(
       'Success!', msg.toString(),
       snackPosition: SnackPosition.BOTTOM,

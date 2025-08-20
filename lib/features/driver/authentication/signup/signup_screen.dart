@@ -1,15 +1,17 @@
-// lib/features/driver/authentication/signup/signup_screen.dart
+// signup_screen.dart
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:taxi_driver/core/widgets/custom_phone_textfield.dart';
 import 'package:taxi_driver/features/driver/authentication/signup/signup_controller.dart';
 import 'package:taxi_driver/routes/app_routes.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_textfield.dart';
-import '../../../../core/widgets/custom_phone_textfield.dart';
-import '../../../../core/widgets/custom_text.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/widgets/custom_text.dart';
 
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});
@@ -26,7 +28,6 @@ class SignupScreen extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: 80.h),
-
               CText(
                 text: 'Sign Up',
                 fontSize: 30.sp,
@@ -106,16 +107,29 @@ class SignupScreen extends StatelessWidget {
               ),
               SizedBox(height: 10.h),
 
-              /// Password Field
-
-              /// Phone Field
-
-              /// Phone Field
+              /// Phone Number Field with PhonePickerField Widget
               PhonePickerField(
                 width: double.infinity,
-                controller: signupController.phone_number,
-                hintText: '(518) 458 8877',
+                controller: signupController.phoneNumberController,
+                hintText: '(300) 123 4567',
+                isoCode: "PK",
+
+                // ✅ pass full number into controller
+                onChange: (fullPhone) {
+                  signupController.setPhoneNumber(
+                    fullPhone,
+                    signupController.dialCode,
+                  );
+                },
+
+                // ✅ keep dial code updated separately
+                onDialCodeChanged: (dial) {
+                  signupController.dialCode = dial;
+                  signupController.fullPhoneNumber =
+                      dial + signupController.phoneNumberController.text.trim();
+                },
               ),
+
               Obx(
                 () => signupController.phoneError.value != null
                     ? Padding(
@@ -158,7 +172,6 @@ class SignupScreen extends StatelessWidget {
                       )
                     : const SizedBox.shrink(),
               ),
-
               SizedBox(height: 30.h),
 
               /// Sign Up Button
@@ -167,20 +180,10 @@ class SignupScreen extends StatelessWidget {
                   text: signupController.isLoading.value
                       ? 'Signing up...'
                       : 'Sign Up',
-                  onTap: () {
-                    // signupController.isLoading.value ? null : () {
-                    //   signupController.register();
-                    // };
-
-                    if (!signupController.isLoading.value) {
-                      signupController.register();
-                    }
-                  },
+                  onTap: signupController.register,
                   width: double.infinity,
-                  // isLoading: signupController.isLoading.value,
                 ),
               ),
-
               SizedBox(height: 20.h),
 
               /// Sign In Link
