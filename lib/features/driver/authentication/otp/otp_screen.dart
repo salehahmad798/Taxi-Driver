@@ -19,7 +19,7 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final OtpController _otpController = Get.find<OtpController>();
   late TapGestureRecognizer _resendTapRecognizer;
-  final Map<String, dynamic> args = Get.arguments;
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +39,6 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String phoneNumber = args["phone_number"] ?? "";
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -56,7 +55,6 @@ class _OtpScreenState extends State<OtpScreen> {
           children: [
             SizedBox(height: 100.h),
 
-            /// Title
             CText(
               text: 'Enter verification code',
               fontSize: 21.sp,
@@ -66,10 +64,9 @@ class _OtpScreenState extends State<OtpScreen> {
 
             SizedBox(height: 6.h),
 
-            /// Info text
+            ///  ========== Info text ==========
             CText(
-              text:
-                  'A code has been sent to ${_otpController.phone}', 
+              text: 'A code has been sent to ${_otpController.phoneNumber}',
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
               maxLines: 2,
@@ -78,7 +75,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
             SizedBox(height: 20.h),
 
-            /// OTP Input Field + Error
+            ///  ============ OTP Input Field + Error ===========
             Obx(
               () => Column(
                 children: [
@@ -119,7 +116,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     ),
                   ),
 
-                  /// Error message
+                  /// =============== Error message ===============
                   if (_otpController.otpError.value != null)
                     Padding(
                       padding: EdgeInsets.only(top: 10.h),
@@ -138,7 +135,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
             SizedBox(height: 30.h),
 
-            /// Verify Button
+            /// ============== Verify Button===============
             Obx(
               () => PrimaryButton(
                 text: _otpController.isOtpLoading.value
@@ -154,7 +151,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
             SizedBox(height: 16.h),
 
-            /// Resend OTP
+            ///============== Resend OTP ===============
             Obx(
               () => RichText(
                 text: TextSpan(
@@ -181,7 +178,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
             SizedBox(height: 20.h),
 
-            /// General Error Message
+            /// ================ General Error Message ===========
             Obx(
               () => _otpController.generalError.value != null
                   ? Container(

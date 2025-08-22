@@ -1,4 +1,3 @@
-// signup_screen.dart
 import 'dart:convert';
 
 import 'package:flutter/gestures.dart';
@@ -35,7 +34,7 @@ class SignupScreen extends StatelessWidget {
               ),
               SizedBox(height: 15.h),
 
-              /// First Name Field
+              /// ============== First Name Field =========
               Obx(
                 () => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +58,7 @@ class SignupScreen extends StatelessWidget {
               ),
               SizedBox(height: 10.h),
 
-              /// Last Name Field
+              /// ============== Last Name Field ==========
               Obx(
                 () => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +82,7 @@ class SignupScreen extends StatelessWidget {
               ),
               SizedBox(height: 10.h),
 
-              /// Email Field
+              ///========= Email Field =============
               Obx(
                 () => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,14 +106,14 @@ class SignupScreen extends StatelessWidget {
               ),
               SizedBox(height: 10.h),
 
-              /// Phone Number Field with PhonePickerField Widget
+              ///========== Phone Number Field with PhonePickerField Widget ==========
               PhonePickerField(
                 width: double.infinity,
                 controller: signupController.phoneNumberController,
-                hintText: '(300) 123 4567',
+                hintText: 'Phone Number',
                 isoCode: "PK",
 
-                // ✅ pass full number into controller
+                // ======== pass full number into controller =========
                 onChange: (fullPhone) {
                   signupController.setPhoneNumber(
                     fullPhone,
@@ -122,7 +121,7 @@ class SignupScreen extends StatelessWidget {
                   );
                 },
 
-                // ✅ keep dial code updated separately
+                // ========= keep dial code updated separately =========
                 onDialCodeChanged: (dial) {
                   signupController.dialCode = dial;
                   signupController.fullPhoneNumber =
@@ -143,7 +142,7 @@ class SignupScreen extends StatelessWidget {
               ),
               SizedBox(height: 15.h),
 
-              /// General Error Message
+              /// ============ General Error Message ==========
               Obx(
                 () => signupController.generalError.value != null
                     ? Container(
@@ -174,7 +173,7 @@ class SignupScreen extends StatelessWidget {
               ),
               SizedBox(height: 30.h),
 
-              /// Sign Up Button
+              /// ============= Sign Up Button==============
               Obx(
                 () => PrimaryButton(
                   text: signupController.isLoading.value
@@ -186,7 +185,7 @@ class SignupScreen extends StatelessWidget {
               ),
               SizedBox(height: 20.h),
 
-              /// Sign In Link
+              /// ============ Sign In Link ============
               RichText(
                 text: TextSpan(
                   style: TextStyle(fontSize: 16.sp, color: Colors.black),

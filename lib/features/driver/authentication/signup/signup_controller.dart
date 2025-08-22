@@ -7,30 +7,29 @@ import 'package:taxi_driver/data/services/api_service.dart';
 import 'package:taxi_driver/routes/app_routes.dart';
 
 class SignupController extends GetxController {
-  // Form controllers
+  // =========== Form controllers ===========
   final firstName = TextEditingController();
   final lastName = TextEditingController();
   final email = TextEditingController();
-  final phoneNumberController = TextEditingController(); // without dial code
-  // final passwordController = TextEditingController();
+  final phoneNumberController = TextEditingController(); 
 
-  // Validation errors
+  // =========== Validation errors ===========
   final firstNameError = RxnString();
   final lastNameError = RxnString();
   final emailError = RxnString();
   final phoneError = RxnString();
   final generalError = RxnString();
 
-  // State
+  // =========== State ===========
   final isLoading = false.obs;
   double? latitude;
   double? longitude;
 
-  /// Dial code + number → full international phone number
+  /// ============== Dial code + number → full international phone number =========
   String fullPhoneNumber = '';
   String dialCode = "+92";
 
-  SignupController(ApiService find); // default Pakistan
+  SignupController(ApiService find); 
 
   @override
   void onInit() {
@@ -40,10 +39,10 @@ class SignupController extends GetxController {
     });
   }
 
-  // inside SignupController
+  //  ============ inside SignupController ===========
   void setPhoneNumber(String number, String dial) {
-    fullPhoneNumber = number; // e.g. +923001234567
-    dialCode = dial; // e.g. +92
+    fullPhoneNumber = number; 
+    dialCode = dial; 
     log("📱 Full Phone: $fullPhoneNumber | Dial code: $dial");
   }
 
@@ -76,7 +75,7 @@ class SignupController extends GetxController {
 
     latitude = position.latitude;
     longitude = position.longitude;
-    log("📍 User location: $latitude, $longitude");
+    log("User location: $latitude, $longitude");
   }
 
   void _showLocationDialog(String message) {
@@ -91,9 +90,9 @@ class SignupController extends GetxController {
     );
   }
 
-  /// Called from UI button
+  /// ============== Called from UI button ========
   Future<void> register() async {
-    // Clear errors first
+    //  =============== Clear errors first =====================================
     firstNameError.value = null;
     lastNameError.value = null;
     emailError.value = null;
@@ -103,7 +102,7 @@ class SignupController extends GetxController {
     final firstNameText = firstName.text.trim();
     final lastNameText = lastName.text.trim();
     final emailText = email.text.trim();
-    // final passwordText = passwordController.text.trim();
+    //  final passwordText = passwordController.text.trim();
 
     if (firstNameText.isEmpty) firstNameError.value = "First name is required";
     if (lastNameText.isEmpty) lastNameError.value = "Last name is required";
@@ -135,14 +134,14 @@ class SignupController extends GetxController {
         // password: passwordText,
         latitude: latitude!,
         longitude: longitude!,
-        {}, // keep if ApiService requires this
+        {},
       );
 
-      log("📥 Signup response: ${response.message}");
+      log("Signup response: ${response.message}");
 
       if (response.success) {
         AppToast.successToast("Success", response.message);
-        log("✅ Signup successful: ${response.message}");
+        log("Signup successful: ${response.message}");
 
         Get.toNamed(
           AppRoutes.otp,

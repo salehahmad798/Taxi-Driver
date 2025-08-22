@@ -11,176 +11,6 @@ import '../../../../core/widgets/custom_text.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../routes/app_routes.dart';
 
-// class LoginScreen extends StatelessWidget {
-//   LoginScreen({super.key});
-
-//   final LoginController loginController = Get.find<LoginController>();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: AppColors.kbackgroundColor,
-//       body: SingleChildScrollView(
-//         child: ConstrainedBox(
-//           constraints: BoxConstraints(
-//             minHeight: MediaQuery.of(context).size.height,
-//           ),
-//           child: IntrinsicHeight(
-//             child: Padding(
-//               padding: EdgeInsets.symmetric(horizontal: 20.w),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.center,
-//                 children: [
-//                   SizedBox(height: 50.h),
-//                   SvgPicture.asset(
-//                     AppImages.appLogo,
-//                     color: AppColors.kprimaryColor,
-//                   ),
-//                   SizedBox(height: 10.h),
-//                   CText(
-//                     text: 'TAXI APP',
-//                     fontSize: 29.sp,
-//                     color: AppColors.primaryappcolor,
-//                     fontWeight: FontWeight.w600,
-//                   ),
-//                   SizedBox(height: 10.h),
-//                   CText(
-//                     text: 'LOGIN',
-//                     fontSize: 30.sp,
-//                     color: AppColors.primarybackColor,
-//                     fontWeight: FontWeight.w400,
-//                   ),
-//                   SizedBox(height: 10.h),
-//                   Center(
-//                     child: SizedBox(
-//                       width: Get.width * 0.9,
-//                       child: CText(
-//                         alignText: TextAlign.center,
-//                         text: 'Login with your Phone number',
-//                         fontSize: 18.sp,
-//                         maxLines: 2,
-//                       ),
-//                     ),
-//                   ),
-//                   SizedBox(height: 65.h),
-
-//                   /// Phone Field
-//                   Obx(
-//                     () => Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         PhonePickerField(
-//                           width: double.infinity,
-//                           controller: loginController.phone,
-//                           hintText: 'Phone Number',
-//                         ),
-//                         if (loginController.phoneError.value != null)
-//                           Padding(
-//                             padding: EdgeInsets.only(top: 5.h),
-//                             child: Text(
-//                               loginController.phoneError.value!,
-//                               style: TextStyle(
-//                                 color: Colors.red,
-//                                 fontSize: 12.sp,
-//                               ),
-//                             ),
-//                           ),
-//                       ],
-//                     ),
-//                   ),
-
-//                   SizedBox(height: 20.h),
-
-//                   /// General Error Message
-//                   Obx(
-//                     () => loginController.generalError.value != null
-//                         ? Container(
-//                             padding: EdgeInsets.all(10.w),
-//                             margin: EdgeInsets.only(bottom: 15.h),
-//                             decoration: BoxDecoration(
-//                               color: Colors.red.shade100,
-//                               borderRadius: BorderRadius.circular(8.r),
-//                               border: Border.all(color: Colors.red),
-//                             ),
-//                             child: Row(
-//                               children: [
-//                                 Icon(
-//                                   Icons.error,
-//                                   color: Colors.red,
-//                                   size: 20.sp,
-//                                 ),
-//                                 SizedBox(width: 10.w),
-//                                 Expanded(
-//                                   child: Text(
-//                                     loginController.generalError.value!,
-//                                     style: TextStyle(
-//                                       color: Colors.red,
-//                                       fontSize: 14.sp,
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           )
-//                         : const SizedBox.shrink(),
-//                   ),
-
-//                   SizedBox(height: 30.h),
-
-//                   /// Login Button
-//                   Obx(
-//                     () => PrimaryButton(
-//                       text: loginController.isLoading.value
-//                           ? 'Logging in...'
-//                           : 'Log In',
-//                       onTap: () {
-//                         if (!loginController.isLoading.value) {
-//                           loginController.login();
-//                         }
-//                       },
-//                       width: double.infinity,
-//                     ),
-//                   ),
-
-//                   /// Spacer replacement
-//                   const Spacer(),
-
-//                   Expanded(child: SizedBox()),
-
-//                   /// Sign Up Link
-//                   RichText(
-//                     text: TextSpan(
-//                       style: TextStyle(fontSize: 16.sp, color: Colors.black),
-//                       children: [
-//                         const TextSpan(text: "Don't have an account? "),
-//                         TextSpan(
-//                           text: "Sign Up",
-//                           style: TextStyle(
-//                             color: AppColors.kprimaryColor,
-//                             fontSize: 16.sp,
-//                             fontWeight: FontWeight.w600,
-//                           ),
-//                           recognizer: TapGestureRecognizer()
-//                             ..onTap = () {
-//                               if (!loginController.isLoading.value) {
-//                                 Get.toNamed(AppRoutes.signup);
-//                               }
-//                             },
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                   SizedBox(height: 20.h),
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
   final LoginController loginController = Get.find<LoginController>();
@@ -225,17 +55,17 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(height: 40.h),
 
-              /// Phone Field
+              ///  ========== Phone Field ===========
               PhonePickerField(
                 hintText: "phone number",
                 width: double.infinity,
                 controller: loginController.phone,
                 isoCode: "PK",
                 onChange: (fullPhone) {
-                  print("Full Phone: $fullPhone"); // +923001234567
+                  print("Full Phone: $fullPhone"); 
                 },
                 onDialCodeChanged: (dialCode) {
-                  print("Dial Code: $dialCode"); // +92
+                  print("Dial Code: $dialCode"); 
                 },
               ),
               Obx(
@@ -252,7 +82,7 @@ class LoginScreen extends StatelessWidget {
 
               SizedBox(height: 20.h),
 
-              /// General Error
+              /// ========== General Error ==========
               Obx(
                 () => loginController.generalError.value != null
                     ? Container(
@@ -284,7 +114,6 @@ class LoginScreen extends StatelessWidget {
 
               SizedBox(height: 30.h),
 
-              /// Login Button
               Obx(
                 () => PrimaryButton(
                   text: loginController.isLoading.value
@@ -301,7 +130,7 @@ class LoginScreen extends StatelessWidget {
 
               SizedBox(height: 20.h),
 
-              /// Sign Up
+            
               Center(
                 child: RichText(
                   textAlign: TextAlign.center,

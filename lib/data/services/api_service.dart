@@ -506,75 +506,80 @@ Future<ApiResponse<AuthResponse>> loginDriver({
   }
 }
 
+Future<ApiResponse<AuthResponse>> verifyOtp({
+  required String otp,
+  required String phoneNumber,
+}) async {
+  try {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/driver/otp/verify'),
+      headers: headers,
+      body: jsonEncode({
+        'phone_number': phoneNumber,
+        'otp': otp,
+      }),
+    );
 
-  Future<ApiResponse<AuthResponse>> verifyOtp({
-    required String phone,
-    required String otp,
-  }) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/driver/otp/verify'),
-        headers: headers,
-        body: jsonEncode({'phone': phone, 'otp': otp}),
+    log('OTP Verify Response: ${response.statusCode} - ${response.body}');
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return ApiResponse<AuthResponse>(
+        success: data['success'] ?? true,
+        message: data['message'] ?? 'OTP verified successfully',
+        data: AuthResponse.fromJson(data['data']),
+        meta: data['meta'] != null ? Meta.fromJson(data['meta']) : null,
       );
-
-      log('OTP Verify Response: ${response.statusCode} - ${response.body}');
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        return ApiResponse<AuthResponse>(
-          success: data['success'] ?? true,
-          message: data['message'] ?? 'OTP verified successfully',
-          data: AuthResponse.fromJson(data['data']),
-          meta: data['meta'] != null ? Meta.fromJson(data['meta']) : null,
-        );
-      } else {
-        return ApiResponse<AuthResponse>(
-          success: false,
-          message: data['message'] ?? 'OTP verification failed',
-          errors: data['errors'],
-        );
-      }
-    } catch (e) {
-      log('OTP Verify Error: $e');
+    } else {
       return ApiResponse<AuthResponse>(
         success: false,
-        message: 'Network error occurred',
+        message: data['message'] ?? 'OTP verification failed',
+        errors: data['errors'],
       );
     }
+  } catch (e) {
+    log('OTP Verify Error: $e');
+    return ApiResponse<AuthResponse>(
+      success: false,
+      message: 'Network error occurred',
+    );
   }
+}
 
-  Future<ApiResponse<void>> resendOtp({required String phone}) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/driver/otp/resend'),
-        headers: headers,
-        body: jsonEncode({'phone': phone}),
+Future<ApiResponse<void>> resendOtp({
+  required String phoneNumber,
+}) async {
+  try {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/driver/otp/resend'),
+      headers: headers,
+      body: jsonEncode({'phone_number': phoneNumber}), // ✅ correct key
+    );
+
+    log('Resend OTP Response: ${response.statusCode} - ${response.body}');
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return ApiResponse<void>(
+        success: data['success'] ?? true,
+        message: data['message'] ?? 'OTP sent successfully',
       );
-
-      log('Resend OTP Response: ${response.statusCode} - ${response.body}');
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        return ApiResponse<void>(
-          success: data['success'] ?? true,
-          message: data['message'] ?? 'OTP sent successfully',
-        );
-      } else {
-        return ApiResponse<void>(
-          success: false,
-          message: data['message'] ?? 'Failed to send OTP',
-          errors: data['errors'],
-        );
-      }
-    } catch (e) {
-      log('Resend OTP Error: $e');
+    } else {
       return ApiResponse<void>(
         success: false,
-        message: 'Network error occurred',
+        message: data['message'] ?? 'Failed to send OTP',
+        errors: data['errors'],
       );
     }
+  } catch (e) {
+    log('Resend OTP Error: $e');
+    return ApiResponse<void>(
+      success: false,
+      message: 'Network error occurred',
+    );
   }
+}
+
 
   Future<ApiResponse<void>> logoutDriver(String token) async {
     try {

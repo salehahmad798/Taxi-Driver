@@ -1,91 +1,15 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
 
-// import 'package:taxi_driver/data/services/api_service.dart';
-// import 'package:taxi_driver/data/services/storage_service.dart';
-// import 'package:taxi_driver/routes/app_routes.dart';
 
-// class OtpController extends GetxController {
-//   final ApiService apiService;
-//   final StorageService storageService;
-
-//   OtpController(this.apiService, this.storageService);
-
-//   final otp = TextEditingController();
-//   final isLoading = false.obs;
-//   final otpError = RxnString();
-//   final generalError = RxnString();
-
-//   late final String phone;
-
-//   @override
-//   void onInit() {
-//     phone = Get.arguments['phone'];
-//     super.onInit();
-//   }
-
-//   @override
-//   void onClose() {
-//     otp.dispose();
-//     super.onClose();
-//   }
-
-//   bool _validateOtp() {
-//     otpError.value = null;
-//     if (otp.text.trim().isEmpty) {
-//       otpError.value = "OTP is required";
-//       return false;
-//     }
-//     return true;
-//   }
-
-//   Future<void> verifyOtp() async {
-//     if (!_validateOtp()) return;
-//     isLoading.value = true;
-
-//     try {
-//       final resp = await apiService.verifyOtp(
-//         phone: phone,
-//         otp: otp.text.trim(),
-//       );
-
-//       if (resp.success && resp.data != null) {
-//         // Save token for later use
-//         // await storageService.saveToken(resp.data!.token);
-//         await storageService.saveRefreshToken(resp.data!.tokenType);
-
-//         // Go to home screen
-//         Get.offAllNamed(AppRoutes.home);
-//       } else {
-//         generalError.value = resp.message;
-//       }
-//     } catch (e) {
-//       generalError.value = e.toString();
-//     } finally {
-//       isLoading.value = false;
-//     }
-//   }
-
-//   Future<void> resendOtp() async {
-//     try {
-//       await apiService.resendOtp(phone: phone);
-//     } catch (e) {
-//       generalError.value = e.toString();
-//     }
-//   }
-// }
-
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:taxi_driver/data/services/api_service.dart';
 import 'package:taxi_driver/data/services/storage_service.dart';
 import 'package:taxi_driver/routes/app_routes.dart';
-
 class OtpController extends GetxController {
   final ApiService apiService;
   final StorageService storageService;
 
-  late final String phone;
+  late final String phoneNumber;
 
   final otpController = TextEditingController();
   final otpError = RxnString();
@@ -96,12 +20,13 @@ class OtpController extends GetxController {
   OtpController(this.apiService, this.storageService);
 
   @override
-void onInit() {
-  // ✅ Standardized key "phone_number" for both signup & login
-  phone = Get.arguments['phone_number'] ?? '';
-  super.onInit();
-}
-
+  void onInit() {
+    phoneNumber = Get.arguments['phone_number'] ?? '';
+    if (phoneNumber.isEmpty) {
+      generalError.value = "Phone number missing. Please go back and try again.";
+    }
+    super.onInit();
+  }
 
   bool _validateOtp() {
     otpError.value = null;
@@ -121,13 +46,16 @@ void onInit() {
 
     try {
       final resp = await apiService.verifyOtp(
-        phone: phone,
         otp: otpController.text.trim(),
+        phoneNumber: phoneNumber,
       );
 
       if (resp.success) {
         if (resp.data != null) {
-          await storageService.saveRefreshToken(resp.data!.tokenType);
+          // ========= save correct values =============
+          await storageService.saveAccessToken(resp.data!.accessToken);
+          // await storageService.saveUser(resp.data!.user);
+
           otpController.clear();
           Get.offAllNamed(AppRoutes.home);
         } else {
@@ -160,7 +88,7 @@ void onInit() {
     generalError.value = null;
 
     try {
-      final resp = await apiService.resendOtp(phone: phone);
+      final resp = await apiService.resendOtp(phoneNumber: phoneNumber);
       if (!resp.success) {
         generalError.value = resp.message ?? 'Failed to resend OTP';
       }
