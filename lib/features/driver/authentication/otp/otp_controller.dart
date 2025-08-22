@@ -96,10 +96,12 @@ class OtpController extends GetxController {
   OtpController(this.apiService, this.storageService);
 
   @override
-  void onInit() {
-    phone = Get.arguments['phone'] ?? '';
-    super.onInit();
-  }
+void onInit() {
+  // ✅ Standardized key "phone_number" for both signup & login
+  phone = Get.arguments['phone_number'] ?? '';
+  super.onInit();
+}
+
 
   bool _validateOtp() {
     otpError.value = null;
@@ -132,7 +134,6 @@ class OtpController extends GetxController {
           generalError.value = 'No data received';
         }
       } else {
-        // Handle validation errors
         if (resp.errors != null) {
           if (resp.errors?['otp'] != null) {
             otpError.value = resp.errors?['otp'][0];

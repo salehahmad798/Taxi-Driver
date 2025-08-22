@@ -51,7 +51,6 @@
 //   }
 // }
 
-
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:taxi_driver/data/services/api_service.dart';
@@ -105,7 +104,10 @@ class LoginController extends GetxController {
       print('Raw API data: ${resp.data}');
 
       if (resp.success) {
-        Get.toNamed(AppRoutes.otp, arguments: {'phone': fullNumber});
+        Get.toNamed(
+          AppRoutes.otp,
+          arguments: {'phone_number': fullNumber}, // ✅ use phone_number
+        );
         phone.clear();
       } else {
         generalError.value = resp.message ?? "Login failed. Try again.";
