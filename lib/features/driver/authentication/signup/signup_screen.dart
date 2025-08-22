@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +49,7 @@ class SignupScreen extends StatelessWidget {
                         padding: EdgeInsets.only(top: 5.h),
                         child: Text(
                           signupController.firstNameError.value!,
-                          style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                          style: TextStyle(color: AppColors.primaryappcolor, fontSize: 12.sp),
                         ),
                       ),
                   ],
@@ -74,7 +73,7 @@ class SignupScreen extends StatelessWidget {
                         padding: EdgeInsets.only(top: 5.h),
                         child: Text(
                           signupController.lastNameError.value!,
-                          style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                          style: TextStyle(color: AppColors.primaryappcolor, fontSize: 12.sp),
                         ),
                       ),
                   ],
@@ -98,7 +97,7 @@ class SignupScreen extends StatelessWidget {
                         padding: EdgeInsets.only(top: 5.h),
                         child: Text(
                           signupController.emailError.value!,
-                          style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                          style: TextStyle(color: AppColors.primaryappcolor, fontSize: 12.sp),
                         ),
                       ),
                   ],
@@ -135,7 +134,7 @@ class SignupScreen extends StatelessWidget {
                         padding: EdgeInsets.only(top: 5.h),
                         child: Text(
                           signupController.phoneError.value!,
-                          style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                          style: TextStyle(color: AppColors.primaryappcolor, fontSize: 12.sp),
                         ),
                       )
                     : const SizedBox.shrink(),
@@ -151,17 +150,17 @@ class SignupScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.red.shade100,
                           borderRadius: BorderRadius.circular(8.r),
-                          border: Border.all(color: Colors.red),
+                          border: Border.all(color: AppColors.primaryappcolor),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.error, color: Colors.red, size: 20.sp),
+                            Icon(Icons.error, color: AppColors.primaryappcolor, size: 20.sp),
                             SizedBox(width: 10.w),
                             Expanded(
                               child: Text(
                                 signupController.generalError.value!,
                                 style: TextStyle(
-                                  color: Colors.red,
+                                  color: AppColors.primaryappcolor,
                                   fontSize: 14.sp,
                                 ),
                               ),
