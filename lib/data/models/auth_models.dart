@@ -1,19 +1,73 @@
+
+class RegistrationResponse {
+  final bool success;
+  final String message;
+  final RegistrationData data;
+  final Meta? meta;
+
+  RegistrationResponse({
+    required this.success,
+    required this.message,
+    required this.data,
+    this.meta,
+  });
+
+  factory RegistrationResponse.fromJson(Map<String, dynamic> json) {
+    return RegistrationResponse(
+      success: json['success'] ?? false,
+      message: json['message'] ?? '',
+      data: RegistrationData.fromJson(json['data'] ?? {}),
+      meta: json['meta'] != null ? Meta.fromJson(json['meta']) : null,
+    );
+  }
+}
+
+class RegistrationData {
+  final int otpCode;
+  final int userId;
+
+  RegistrationData({
+    required this.otpCode,
+    required this.userId,
+  });
+
+  factory RegistrationData.fromJson(Map<String, dynamic> json) {
+    return RegistrationData(
+      otpCode: json['otp_code'] ?? 0,
+      userId: json['user_id'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'otp_code': otpCode,
+      'user_id': userId,
+    };
+  }
+}
+
 class AuthResponse {
   final String accessToken;
   final String tokenType;
   final User user;
+  final bool? isDocumentUploaded;
+  final bool? isVehicleInformationUploaded;
 
   AuthResponse({
     required this.accessToken,
     required this.tokenType,
     required this.user,
+    this.isDocumentUploaded,
+    this.isVehicleInformationUploaded,
   });
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     return AuthResponse(
-      accessToken: json['access_token'] ?? '',
-      tokenType: json['token_type'] ?? 'Bearer',
-      user: User.fromJson(json['user'] ?? {}),
+      accessToken: json['access_token'],
+      tokenType: json['token_type'],
+      user: User.fromJson(json['user']),
+      isDocumentUploaded: json['is_document_uploaded'] ?? false,
+      isVehicleInformationUploaded: json['is_vehicle_information_uploaded'] ?? false,
     );
   }
 
@@ -22,9 +76,12 @@ class AuthResponse {
       'access_token': accessToken,
       'token_type': tokenType,
       'user': user.toJson(),
+      'is_document_uploaded': isDocumentUploaded,
+      'is_vehicle_information_uploaded': isVehicleInformationUploaded,
     };
   }
 }
+
 
 class User {
   final int id;

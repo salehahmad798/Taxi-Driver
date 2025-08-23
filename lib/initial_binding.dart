@@ -32,7 +32,7 @@ class InitialBinding extends Bindings {
 
     /// Controllers
     Get.lazyPut<AuthController>(() => AuthController());
-    Get.lazyPut<SignupController>(() => SignupController(Get.find<ApiService>()));
+    Get.lazyPut<SignupController>(() => SignupController());
     Get.lazyPut<LoginController>(() => LoginController(Get.find<ApiService>()));
     Get.lazyPut<OtpController>(() => OtpController(Get.find<ApiService>(), Get.find<StorageService>()));
   }

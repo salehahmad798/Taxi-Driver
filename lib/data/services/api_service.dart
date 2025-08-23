@@ -390,6 +390,8 @@
 //   }
 // }
 
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -417,56 +419,57 @@ class ApiService extends GetxService {
 
   ApiService(ApiClient find);
 
-  Future<ApiResponse<AuthResponse>> registerDriver(
-    Map<String, Object?> body, {
-    required String firstName,
-    required String lastName,
-    required String email,
-    required String phone_number,
-    // required String password,
-    required double latitude,
-    required double longitude,
-  }) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/driver/register'),
-        headers: headers,
-        body: jsonEncode({
-          'first_name': firstName,
-          'last_name': lastName,
-          'email': email,
-          'phone_number': phone_number,
-          // 'password': password,
-          'latitude': latitude.toString(),
-          'longitude': longitude.toString(),
-        }),
+ Future<ApiResponse<RegistrationResponse>> registerDriver({
+  required String firstName,
+  required String lastName,
+  required String email,
+  // required String phoneNumber,
+  required double latitude,
+  required double longitude, required String phone_number,
+}) async {
+  try {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/driver/register'),
+      headers: headers,
+      body: jsonEncode({
+        'first_name': firstName,
+        'last_name': lastName,
+        'email': email,
+        'phone_number': phone_number, // Use the correct key
+        'latitude': latitude.toString(),
+        'longitude': longitude.toString(),
+      }),
+    );
+
+    log('Register Response: ${response.statusCode} - ${response.body}');
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return ApiResponse<RegistrationResponse>(
+        success: data['success'] ?? true,
+        message: data['message'] ?? 'Registration successful',
+        data: RegistrationResponse.fromJson(data), // Parse the entire response
+        meta: data['meta'] != null ? Meta.fromJson(data['meta']) : null,
       );
-
-      log('Register Response: ${response.statusCode} - ${response.body}');
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return ApiResponse<AuthResponse>(
-          success: data['success'] ?? true,
-          message: data['message'] ?? 'Registration successful',
-          data: AuthResponse.fromJson(data['data']),
-          meta: data['meta'] != null ? Meta.fromJson(data['meta']) : null,
-        );
-      } else {
-        return ApiResponse<AuthResponse>(
-          success: false,
-          message: data['message'] ?? 'Registration failed',
-          errors: data['errors'],
-        );
-      }
-    } catch (e) {
-      log('Register Error: $e');
-      return ApiResponse<AuthResponse>(
+    } else {
+      return ApiResponse<RegistrationResponse>(
         success: false,
-        message: 'Network error occurred',
+        message: data['message'] ?? 'Registration failed',
+        errors: data['errors'],
       );
     }
+  } catch (e) {
+    log('Register Error: $e');
+    return ApiResponse<RegistrationResponse>(
+      success: false,
+      message: 'Network error occurred',
+    );
   }
+}
+
+
+
+// You'll also need these model classes:
 
   Future<ApiResponse<AuthResponse>> loginDriver({
     required String identifier,
@@ -776,17 +779,15 @@ class ApiService extends GetxService {
     required File interior,
   }) async {
     try {
-      // ✅ Get token from storage
-      final token = await storageService.read("auth_token");
+      final token = await storageService.getAccessToken();
       if (token == null) {
-        log(" No token found in storage.");
+        log("No token found in storage.");
         throw Exception("Token not available. Please login again.");
       }
 
       var uri = Uri.parse('$baseUrl/auth/driver/upload-document');
       var request = http.MultipartRequest("POST", uri);
 
-      // ✅ Add headers with token
       request.headers.addAll({
         "Accept": "application/json",
         "Authorization": "Bearer $token",
@@ -814,7 +815,7 @@ class ApiService extends GetxService {
       await attachFile(vehicleRegistration, "vehicle_registration");
       await attachFile(passport, "passport");
 
-      log("📡 Sending request to $uri with headers: ${request.headers}");
+      log("Sending request to $uri with headers: ${request.headers}");
 
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
@@ -828,48 +829,86 @@ class ApiService extends GetxService {
     }
   }
 Future<Response> registerVehicle(Map<String, dynamic> data) async {
-    final url = "$baseUrl/auth/driver/register-vehicle";
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: jsonEncode(data),
-      );
-
-      final decoded = jsonDecode(response.body);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return Response(
-          statusCode: response.statusCode,
-          body: {
-            "success": true,
-            "message": decoded["message"] ?? "Vehicle registered successfully!",
-            "data": decoded["data"] ?? {},
-          },
-        );
-      } else {
-        return Response(
-          statusCode: response.statusCode,
-          body: {
-            "success": false,
-            "message": decoded["message"] ?? "Failed to register vehicle",
-            "errors": decoded["errors"] ?? {},
-          },
-        );
-      }
-    } catch (e) {
+  final url = "$baseUrl/auth/driver/register-vehicle";
+  
+  print("API Service: Starting vehicle registration");
+  print("Request URL: $url");
+  print("Request Data: $data");
+  
+  try {
+    final storage = Get.find<StorageService>();
+    final token = await storage.getToken();
+    
+    print("🔑 Auth Token Retrieved: ${token != null ? 'Yes' : 'No'}");
+    if (token != null) {
+      print("🎫 Token Length: ${token.length} characters");
+      print("🎫 Token Preview: ${token.length > 20 ? '${token.substring(0, 20)}...' : token}");
+    }
+    
+    final headers = {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "Authorization": "Bearer $token",
+    };
+    
+    print("📋 Request Headers: $headers");
+    print("📦 Request Body: ${jsonEncode(data)}");
+    
+    print("⏳ Making HTTP POST request...");
+    final response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    
+    print("📨 HTTP Response received:");
+    print("🔢 Status Code: ${response.statusCode}");
+    print("📄 Response Headers: ${response.headers}");
+    print("📝 Raw Response Body: ${response.body}");
+    
+    final decoded = jsonDecode(response.body);
+    print("🔄 Decoded Response: $decoded");
+    
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print("✅ API Success: Status ${response.statusCode}");
       return Response(
-        statusCode: 500,
+        statusCode: response.statusCode,
+        body: {
+          "success": true,
+          "message": decoded["message"] ?? "Vehicle registered successfully!",
+          "data": decoded["data"] ?? {},
+        },
+      );
+    } else {
+      print("API Error: Status ${response.statusCode}");
+      print("Error Message: ${decoded["message"] ?? 'Unknown error'}");
+      if (decoded["errors"] != null) {
+        print("Validation Errors: ${decoded["errors"]}");
+      }
+      
+      return Response(
+        statusCode: response.statusCode,
         body: {
           "success": false,
-          "message": "Network error, please try again",
-          "error": e.toString(),
+          "message": decoded["message"] ?? "Failed to register vehicle",
+          "errors": decoded["errors"] ?? {},
         },
       );
     }
+  } catch (e, stackTrace) {
+    print("API Exception Occurred:");
+    print("Error Type: ${e.runtimeType}");
+    print("Error Message: $e");
+    print("Stack Trace: $stackTrace");
+    
+    return Response(
+      statusCode: 500,
+      body: {
+        "success": false,
+        "message": "Network error, please try again",
+        "error": e.toString(),
+      },
+    );
   }
+}
 }

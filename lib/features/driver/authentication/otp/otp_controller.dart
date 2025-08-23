@@ -55,15 +55,27 @@ class OtpController extends GetxController {
       if (resp.success) {
         if (resp.data != null) {
           // ========= save correct values =============
-            await storageService.saveAccessToken(resp.data!.accessToken);
-  await storageService.saveUser(resp.data!.user);   // ✅ works now
-  await storageService.write("auth_token", resp.data!.accessToken);
-  log("✅ Token saved: ${resp.data!.accessToken}");
+          await storageService.saveAccessToken(resp.data!.accessToken);
+          await storageService.setTokenType(resp.data!.tokenType);
+          await storageService.saveUser(resp.data!.user);
 
+          log("✅ Token and user data saved");
 
+          final isDocumentUploaded = resp.data!.isDocumentUploaded;
+          final isVehicleInfoUploaded = resp.data!.isVehicleInformationUploaded;
 
           otpController.clear();
-          Get.offAllNamed(AppRoutes.documentUpload);
+
+          // ====== Navigate ======
+          // Get.offAllNamed(AppRoutes.documentUpload);
+
+          if (isDocumentUploaded == true && isVehicleInfoUploaded == true) {
+            Get.offAllNamed(AppRoutes.home); 
+          } else {
+            Get.offAllNamed(
+              AppRoutes.documentUpload,
+            ); 
+          }
         } else {
           generalError.value = 'No data received';
         }

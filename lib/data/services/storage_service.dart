@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:http/http.dart' as storage;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/auth_models.dart';
 
@@ -37,6 +38,14 @@ class StorageService {
   static const String _keyIsFirstTime = 'is_first_time';
   static const String _keyPhoneNumber = 'phone_number';
   static const String _keyRefreshToken = 'refresh_token';
+  static const String _keyAuthToken = 'auth_token';
+
+// Then use _keyAuthToken in these methods, if preferred.
+
+
+  // Additional keys for document and vehicle info upload flags
+  static const String _keyIsDocumentUploaded = 'is_document_uploaded';
+  static const String _keyIsVehicleInfoUploaded = 'is_vehicle_information_uploaded';
 
   /// -------- First Time User --------
   Future<bool> isFirstTimeUser() async {
@@ -59,12 +68,6 @@ class StorageService {
   /// -------- Access Token --------
   Future<void> saveAccessToken(String token) async {
     await _prefs.setString(_keyAccessToken, token);
-  }
-
-  /// -------- Save User --------
-  Future<void> saveUser(User user) async {
-    final String userJson = jsonEncode(user.toJson());
-    await _prefs.setString(_keyUserData, userJson);
   }
 
   String? getAccessToken() {
@@ -106,7 +109,7 @@ class StorageService {
     return null;
   }
 
-  Future<void> setUserData(User user) async {
+  Future<void> saveUser(User user) async {
     final String userJson = jsonEncode(user.toJson());
     await _prefs.setString(_keyUserData, userJson);
   }
@@ -120,15 +123,35 @@ class StorageService {
     await _prefs.setString(_keyPhoneNumber, phoneNumber);
   }
 
+  /// -------- Document Uploaded Flag --------
+  Future<void> setIsDocumentUploaded(bool value) async {
+    await _prefs.setBool(_keyIsDocumentUploaded, value);
+  }
+
+  Future<bool> getIsDocumentUploaded() async {
+    return _prefs.getBool(_keyIsDocumentUploaded) ?? false;
+  }
+
+  /// -------- Vehicle Info Uploaded Flag --------
+  Future<void> setIsVehicleInformationUploaded(bool value) async {
+    await _prefs.setBool(_keyIsVehicleInfoUploaded, value);
+  }
+
+  Future<bool> getIsVehicleInformationUploaded() async {
+    return _prefs.getBool(_keyIsVehicleInfoUploaded) ?? false;
+  }
+
   /// -------- Save complete auth data --------
   Future<void> saveAuthData(AuthResponse authResponse) async {
     await Future.wait([
       setLoggedIn(true),
       saveAccessToken(authResponse.accessToken),
       setTokenType(authResponse.tokenType),
-      setUserData(authResponse.user),
+      saveUser(authResponse.user),
       setPhoneNumber(authResponse.user.phone),
       setFirstTimeUser(false),
+      setIsDocumentUploaded(authResponse.isDocumentUploaded ?? false),
+      setIsVehicleInformationUploaded(authResponse.isVehicleInformationUploaded ?? false),
     ]);
   }
 
@@ -166,17 +189,6 @@ class StorageService {
       _prefs.setBool(_keyIsLoggedIn, false),
     ]);
   }
-
-  //   Future<void> saveAuthData(AuthResponse authResponse) async {
-  //   await Future.wait([
-  //     setLoggedIn(true),
-  //     saveAccessToken(authResponse.accessToken),
-  //     setTokenType(authResponse.tokenType),
-  //     saveUser(authResponse.user), // ✅ using saveUser here
-  //     setPhoneNumber(authResponse.user.phone),
-  //     setFirstTimeUser(false),
-  //   ]);
-  // }
 
   /// -------- Generic Helpers --------
   Future<void> saveString(String key, String value) async {
@@ -228,8 +240,6 @@ class StorageService {
   }
 
   /// -------- Generic Write --------
-
-  /// -------- Generic Write --------
   Future<void> write(String key, dynamic value) async {
     if (value is String) {
       await _prefs.setString(key, value);
@@ -261,5 +271,19 @@ class StorageService {
     return value;
   }
 
-  /// -------- Remove Key --------
+  Future<String?> getToken() async {
+  // Reads the access token string saved under _keyAccessToken
+  return _prefs.getString(_keyAccessToken);
+}
+
+Future<void> setToken(String token) async {
+  // Saves the access token string under _keyAccessToken
+  await _prefs.setString(_keyAccessToken, token);
+}
+
+Future<void> removeToken() async {
+  // Removes the access token saved under _keyAccessToken
+  await _prefs.remove(_keyAccessToken);
+}
+
 }

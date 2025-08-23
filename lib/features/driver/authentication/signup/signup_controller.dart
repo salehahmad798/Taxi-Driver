@@ -29,7 +29,8 @@ class SignupController extends GetxController {
   String fullPhoneNumber = '';
   String dialCode = "+92";
 
-  SignupController(ApiService find); 
+  // ApiService instance
+  final ApiService apiService = Get.find<ApiService>();
 
   @override
   void onInit() {
@@ -102,13 +103,11 @@ class SignupController extends GetxController {
     final firstNameText = firstName.text.trim();
     final lastNameText = lastName.text.trim();
     final emailText = email.text.trim();
-    //  final passwordText = passwordController.text.trim();
 
     if (firstNameText.isEmpty) firstNameError.value = "First name is required";
     if (lastNameText.isEmpty) lastNameError.value = "Last name is required";
     if (emailText.isEmpty) emailError.value = "Email is required";
     if (fullPhoneNumber.isEmpty) phoneError.value = "Phone number is required";
-    // if (passwordText.isEmpty) generalError.value = "Password is required";
 
     if (firstNameError.value != null ||
         lastNameError.value != null ||
@@ -126,66 +125,77 @@ class SignupController extends GetxController {
     isLoading.value = true;
 
     try {
-      final response = await ApiService(Get.find()).registerDriver(
+      final response = await apiService.registerDriver(
         firstName: firstNameText,
         lastName: lastNameText,
         email: emailText,
-        phone_number: fullPhoneNumber,
-        // password: passwordText,
+        // phoneNumber: fullPhoneNumber, // Fixed parameter name
         latitude: latitude!,
-        longitude: longitude!,
-        {},
+        longitude: longitude!, phone_number: fullPhoneNumber,
       );
 
       log("Signup response: ${response.message}");
 
-      if (response.success) {
+      if (response.success && response.data != null) {
         AppToast.successToast("Success", response.message);
         log("Signup successful: ${response.message}");
+        
+        // Extract OTP and user ID from response
+        final otpCode = response.data!.data.otpCode;
+        final userId = response.data!.data.userId;
 
         Get.toNamed(
           AppRoutes.otp,
-          arguments: {"phone_number": fullPhoneNumber},
+          arguments: {
+            "phone_number": fullPhoneNumber,
+            "otp_code": otpCode,
+            "user_id": userId,
+          },
         );
       } else {
-        try {
-          if (response.errors != null && response.errors!.isNotEmpty) {
-            final errors = response.errors!; 
-            final firstKey = errors.keys.first;
-            final firstErrorMessage = (errors[firstKey] as List).first;
-
-            switch (firstKey) {
-              case "first_name":
-                firstNameError.value = firstErrorMessage;
-                break;
-              case "last_name":
-                lastNameError.value = firstErrorMessage;
-                break;
-              case "email":
-                emailError.value = firstErrorMessage;
-                break;
-              case "phone_number":
-                phoneError.value = firstErrorMessage;
-                break;
-              default:
-                generalError.value = firstErrorMessage;
-            }
-
-            AppToast.failToast(firstErrorMessage);
-          } else {
-            generalError.value = response.message;
-            AppToast.failToast(response.message);
-          }
-        } catch (e) {
-          generalError.value = "Something went wrong.";
-          AppToast.failToast("Something went wrong.");
-        }
+        _handleRegistrationError(response);
       }
     } catch (e) {
-      generalError.value = e.toString();
-      Get.snackbar("Error", e.toString());
+      log('Register Error in Controller: $e');
+      generalError.value = "Network error occurred";
+      AppToast.failToast("Network error occurred");
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  void _handleRegistrationError(dynamic response) {
+    try {
+      if (response.errors != null && response.errors!.isNotEmpty) {
+        final errors = response.errors!; 
+        final firstKey = errors.keys.first;
+        final firstErrorMessage = (errors[firstKey] as List).first;
+
+        switch (firstKey) {
+          case "first_name":
+            firstNameError.value = firstErrorMessage;
+            break;
+          case "last_name":
+            lastNameError.value = firstErrorMessage;
+            break;
+          case "email":
+            emailError.value = firstErrorMessage;
+            break;
+          case "phone_number":
+            phoneError.value = firstErrorMessage;
+            break;
+          default:
+            generalError.value = firstErrorMessage;
+        }
+
+        AppToast.failToast(firstErrorMessage);
+      } else {
+        generalError.value = response.message ?? "Registration failed";
+        AppToast.failToast(response.message ?? "Registration failed");
+      }
+    } catch (e) {
+      generalError.value = "Something went wrong.";
+      AppToast.failToast("Something went wrong.");
     }
   }
 
@@ -195,7 +205,6 @@ class SignupController extends GetxController {
     lastName.dispose();
     email.dispose();
     phoneNumberController.dispose();
-    // passwordController.dispose();
     super.onClose();
   }
 }

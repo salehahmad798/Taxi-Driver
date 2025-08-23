@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -24,54 +26,86 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
               _buildSectionHeader('Vehicle Type *'),
               SizedBox(height: 10),
               Obx(() {
-                return Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: controller.vehicleTypes.map((type) {
-                    bool isSelected =
-                        controller.selectedVehicleType.value == type['name'];
-                    return GestureDetector(
-                      onTap: () =>
-                          controller.setVehicleType(type['name'].toString()),
-                      child: Container(
-                        padding: EdgeInsets.all(12),
-                        width: 100.w,
-                        decoration: BoxDecoration(
-                          color: isSelected ? Colors.red[50] : Colors.white,
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.kprimaryColor
-                                : AppColors.textfieldcolor,
-                            width: 2,
+                return Column(
+                  children: [
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: controller.vehicleTypes.map((type) {
+                        bool isSelected =
+                            controller.selectedVehicleType.value ==
+                            type['name'];
+                        return GestureDetector(
+                          onTap: () => controller.setVehicleType(
+                            type['name'].toString(),
                           ),
-                          borderRadius: BorderRadius.circular(12.r),
+                          child: Container(
+                            padding: EdgeInsets.all(12),
+                            width: 100.w,
+                            decoration: BoxDecoration(
+                              color: isSelected ? Colors.red[50] : Colors.white,
+                              border: Border.all(
+                                color: isSelected
+                                    ? AppColors.kprimaryColor
+                                    : AppColors.textfieldcolor,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  type['icon'] as IconData,
+                                  color: isSelected
+                                      ? AppColors.kprimaryColor
+                                      : Colors.grey,
+                                  size: 30,
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  type['name'].toString(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: isSelected
+                                        ? AppColors.primaryappcolor
+                                        : Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    if (controller.selectedVehicleType.value.isEmpty)
+                      Container(
+                        margin: EdgeInsets.only(top: 8),
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                        child: Row(
                           children: [
                             Icon(
-                              type['icon'] as IconData,
-                              color: isSelected
-                                  ? AppColors.kprimaryColor
-                                  : Colors.grey,
-                              size: 30,
+                              Icons.info_outline,
+                              color: Colors.red[700],
+                              size: 16,
                             ),
-                            SizedBox(height: 8),
+                            SizedBox(width: 8),
                             Text(
-                              type['name'].toString(),
-                              textAlign: TextAlign.center,
+                              "Please select a vehicle type",
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: isSelected
-                                    ? AppColors.primaryappcolor
-                                    : Colors.grey,
+                                color: Colors.red[700],
+                                fontSize: 12,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    );
-                  }).toList(),
+                  ],
                 );
               }),
               SizedBox(height: 20),
@@ -80,10 +114,15 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
               SizedBox(height: 10),
               _buildTextFormField(
                 controller: controller.drivingLicenseController,
-                hint: 'Enter registration number',
-                validator: (v) => controller.validateMinLength(v,
-                    min: 5, field: "Registration number"),
+                hint: 'Enter registration number (e.g. ABC-123)',
+                validator: (v) => controller.validateMinLength(
+                  v,
+                  min: 5,
+                  field: "Registration number",
+                ),
+                onChanged: (value) => print("Registration Number: $value"),
               ),
+
               SizedBox(height: 20),
 
               Row(
@@ -99,6 +138,7 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                           hint: 'Toyota',
                           validator: (v) =>
                               controller.validateRequired(v, field: "Make"),
+                          onChanged: (value) => print("Make: $value"),
                         ),
                       ],
                     ),
@@ -115,6 +155,7 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                           hint: 'Corolla',
                           validator: (v) =>
                               controller.validateRequired(v, field: "Model"),
+                          onChanged: (value) => print("Model: $value"),
                         ),
                       ],
                     ),
@@ -135,6 +176,8 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                           controller: controller.yearController,
                           hint: '2020',
                           validator: controller.validateYear,
+                          onChanged: (value) => print("Year: $value"),
+                          keyboardType: TextInputType.number,
                         ),
                       ],
                     ),
@@ -151,6 +194,7 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                           hint: 'White',
                           validator: (v) =>
                               controller.validateRequired(v, field: "Color"),
+                          onChanged: (value) => print("Color: $value"),
                         ),
                       ],
                     ),
@@ -162,40 +206,77 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
               _buildSectionHeader('Fuel Type *'),
               SizedBox(height: 10),
               Obx(() {
-                return Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: controller.fuelTypes.map((type) {
-                    bool isSelected = controller.selectedFuelType.value == type;
-                    return GestureDetector(
-                      onTap: () => controller.setFuelType(type),
-                      child: Container(
-                        padding: EdgeInsets.all(12),
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: isSelected ? Colors.red[100] : Colors.grey[200],
-                          border: Border.all(
-                            color:
-                                isSelected ? AppColors.backColor : Colors.white,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Center(
-                          child: Text(
-                            type,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                return Column(
+                  children: [
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: controller.fuelTypes.map((type) {
+                        bool isSelected =
+                            controller.selectedFuelType.value == type;
+                        return GestureDetector(
+                          onTap: () {
+                            controller.setFuelType(type);
+                            print("Fuel Type Selected: $type");
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(12),
+                            width: 100,
+                            decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppColors.kprimaryColor
-                                  : Colors.black,
+                                  ? Colors.red[100]
+                                  : Colors.grey[200],
+                              border: Border.all(
+                                color: isSelected
+                                    ? AppColors.backColor
+                                    : Colors.white,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            child: Center(
+                              child: Text(
+                                type,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected
+                                      ? AppColors.kprimaryColor
+                                      : Colors.black,
+                                ),
+                              ),
                             ),
                           ),
+                        );
+                      }).toList(),
+                    ),
+                    if (controller.selectedFuelType.value.isEmpty)
+                      Container(
+                        margin: EdgeInsets.only(top: 8),
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              color: Colors.red[700],
+                              size: 16,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              "Please select a fuel type",
+                              style: TextStyle(
+                                color: Colors.red[700],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  }).toList(),
+                  ],
                 );
               }),
 
@@ -204,9 +285,10 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
               SizedBox(height: 10),
               _buildTextFormField(
                 controller: controller.ownernameController,
-                hint: 'Ahmad',
+                hint: 'Ahmad Khan',
                 validator: (v) =>
                     controller.validateRequired(v, field: "Owner name"),
+                onChanged: (value) => print("Owner Name: $value"),
               ),
               SizedBox(height: 20),
 
@@ -214,10 +296,13 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
               SizedBox(height: 10),
               _buildTextFormField(
                 controller: controller.ownerAddressController,
-                hint: '123 main street Lahore',
+                hint: '123 Main Street, Lahore',
                 validator: (v) =>
                     controller.validateRequired(v, field: "Owner address"),
+                onChanged: (value) => print("Owner Address: $value"),
+                maxLines: 2,
               ),
+
               SizedBox(height: 20),
 
               _buildSectionHeader('Engine Number *'),
@@ -225,8 +310,13 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
               _buildTextFormField(
                 controller: controller.engineNumberController,
                 hint: 'ENG12345689',
-                validator: (v) => controller.validateMinLength(v,
-                    min: 6, field: "Engine number"),
+                validator: (v) => controller.validateMinLength(
+                  v,
+                  min: 6,
+                  field: "Engine number",
+                ),
+                onChanged: (value) => print("Engine Number: $value"),
+                maxLines: null,
               ),
 
               SizedBox(height: 20),
@@ -235,9 +325,14 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
               _buildTextFormField(
                 controller: controller.chassisNumberController,
                 hint: 'CHS54359843543',
-                validator: (v) => controller.validateMinLength(v,
-                    min: 6, field: "Chassis number"),
+                validator: (v) => controller.validateMinLength(
+                  v,
+                  min: 6,
+                  field: "Chassis number",
+                ),
+                onChanged: (value) => print("Chassis Number: $value"),
               ),
+
               SizedBox(height: 20),
 
               Row(
@@ -254,13 +349,17 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                             onTap: () async {
                               final pickedDate = await showDatePicker(
                                 context: Get.context!,
-                                initialDate: controller.registrationDate.value ??
+                                initialDate:
+                                    controller.registrationDate.value ??
                                     DateTime.now(),
                                 firstDate: DateTime(2000),
                                 lastDate: DateTime(2100),
                               );
                               if (pickedDate != null) {
                                 controller.setRegistrationDate(pickedDate);
+                                print(
+                                  "Registration Date Selected: $pickedDate",
+                                );
                               }
                             },
                             controller: TextEditingController(
@@ -291,13 +390,15 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                             onTap: () async {
                               final pickedDate = await showDatePicker(
                                 context: Get.context!,
-                                initialDate: controller.expiryDate.value ??
+                                initialDate:
+                                    controller.expiryDate.value ??
                                     DateTime.now(),
                                 firstDate: DateTime(2000),
                                 lastDate: DateTime(2100),
                               );
                               if (pickedDate != null) {
                                 controller.setExpiryDate(pickedDate);
+                                print("Expiry Date Selected: $pickedDate");
                               }
                             },
                             controller: TextEditingController(
@@ -323,15 +424,15 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                 () => PrimaryButton(
                   width: double.infinity,
                   text: controller.isLoading.value ? 'Loading...' : 'Next',
-                  onTap: (){
-                    // 
+                  onTap: () {
+                    //
                     // controller.submitVehicleRegistration();
+                    // print(" Submitting Vehicle Registration");
 
-                    if(!controller.isLoading.value){
+                    if (!controller.isLoading.value) {
                       controller.submitVehicleRegistration();
                     }
-
-                  }
+                  },
                 ),
               ),
             ],
@@ -356,10 +457,15 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
     required TextEditingController controller,
     required String hint,
     String? Function(String?)? validator,
+    required void Function(dynamic value) onChanged,
+    int? maxLines,
+    TextInputType? keyboardType,
   }) {
     return TextFormField(
       controller: controller,
       validator: validator,
+      onChanged: onChanged,
+      maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: Colors.grey[400]),
@@ -379,8 +485,6 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
       ),
     );
   }
-
-
 
   Widget _buildDropdown({
     String? value,
@@ -437,8 +541,4 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
       ),
     );
   }
-
 }
-
-
-  

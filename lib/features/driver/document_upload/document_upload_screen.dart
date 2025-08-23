@@ -90,56 +90,57 @@ class DocumentUploadScreen extends GetView<DocumentUploadController> {
           ),
 
           // ================  Bottom Button ================
-          Container(
-            padding: EdgeInsets.all(20),
-            color: Colors.white,
-            child: Obx(
-              () => SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (controller.allDocumentsUploaded) {
-                      controller.proceedToNext();
-                    } else {
-                      // await controller.uploadSingleDocument(document, file);
-                      await controller.uploadAllDocuments();
+       Container(
+  padding: EdgeInsets.all(20),
+  color: Colors.white,
+  child: Obx(
+    () => SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: () async {
+          if (controller.allDocumentsUploaded) {
+            controller.proceedToNext();
+          } else {
+            await controller.uploadAllDocuments();
 
-                      if (controller.allDocumentsUploaded) {
-                        controller.proceedToNext();
-                      } else {
-                        Get.snackbar(
-                          'Upload Required',
-                          'Please upload all required documents before continuing.',
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: Colors.red.withOpacity(0.8),
-                          colorText: Colors.white,
-                        );
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: controller.allDocumentsUploaded
-                        ? AppColors.kprimaryColor
-                        : Colors.grey[300],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    'Continue',
-                    style: TextStyle(
-                      color: controller.allDocumentsUploaded
-                          ? Colors.white
-                          : Colors.grey[600],
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            if (controller.allDocumentsUploaded) {
+              controller.proceedToNext();
+            } else {
+              Get.snackbar(
+                'Upload Required',
+                'Please upload all required documents before continuing.',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.red.withOpacity(0.8),
+                colorText: Colors.white,
+              );
+            }
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: controller.allDocumentsUploaded
+              ? AppColors.kprimaryColor
+              : Colors.grey[300],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
+        ),
+        child: Text(
+          'Continue',
+          style: TextStyle(
+            color: controller.allDocumentsUploaded
+                ? Colors.white
+                : Colors.grey,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    ),
+  ),
+),
+
+      
         ],
       ),
     );
