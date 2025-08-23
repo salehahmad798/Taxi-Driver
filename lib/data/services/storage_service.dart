@@ -23,7 +23,8 @@ class StorageService {
   static StorageService get instance {
     if (_instance == null) {
       throw Exception(
-          "StorageService not initialized. Call StorageService.init() first.");
+        "StorageService not initialized. Call StorageService.init() first.",
+      );
     }
     return _instance!;
   }
@@ -58,6 +59,12 @@ class StorageService {
   /// -------- Access Token --------
   Future<void> saveAccessToken(String token) async {
     await _prefs.setString(_keyAccessToken, token);
+  }
+
+  /// -------- Save User --------
+  Future<void> saveUser(User user) async {
+    final String userJson = jsonEncode(user.toJson());
+    await _prefs.setString(_keyUserData, userJson);
   }
 
   String? getAccessToken() {
@@ -160,6 +167,17 @@ class StorageService {
     ]);
   }
 
+  //   Future<void> saveAuthData(AuthResponse authResponse) async {
+  //   await Future.wait([
+  //     setLoggedIn(true),
+  //     saveAccessToken(authResponse.accessToken),
+  //     setTokenType(authResponse.tokenType),
+  //     saveUser(authResponse.user), // ✅ using saveUser here
+  //     setPhoneNumber(authResponse.user.phone),
+  //     setFirstTimeUser(false),
+  //   ]);
+  // }
+
   /// -------- Generic Helpers --------
   Future<void> saveString(String key, String value) async {
     await _prefs.setString(key, value);
@@ -208,4 +226,40 @@ class StorageService {
   Future<void> clear() async {
     await _prefs.clear();
   }
+
+  /// -------- Generic Write --------
+
+  /// -------- Generic Write --------
+  Future<void> write(String key, dynamic value) async {
+    if (value is String) {
+      await _prefs.setString(key, value);
+    } else if (value is int) {
+      await _prefs.setInt(key, value);
+    } else if (value is bool) {
+      await _prefs.setBool(key, value);
+    } else if (value is double) {
+      await _prefs.setDouble(key, value);
+    } else if (value is Map || value is List) {
+      await _prefs.setString(key, jsonEncode(value));
+    } else {
+      throw Exception("Unsupported type for write()");
+    }
+  }
+
+  /// -------- Generic Read --------
+  dynamic read(String key) {
+    final value = _prefs.get(key);
+
+    if (value is String) {
+      try {
+        // decode back Map/List if it was json
+        return jsonDecode(value);
+      } catch (_) {
+        return value; // just a string
+      }
+    }
+    return value;
+  }
+
+  /// -------- Remove Key --------
 }

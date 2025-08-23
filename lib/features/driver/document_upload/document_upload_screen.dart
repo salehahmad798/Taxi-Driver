@@ -98,24 +98,29 @@ class DocumentUploadScreen extends GetView<DocumentUploadController> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (controller.allDocumentsUploaded) {
                       controller.proceedToNext();
                     } else {
-                      Get.snackbar(
-                        'Upload Required',
-                        'Please upload all required documents before continuing.',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.red.withOpacity(0.8),
-                        colorText: Colors.white,
-                        margin: EdgeInsets.all(10),
-                        borderRadius: 8,
-                      );
+                      // await controller.uploadSingleDocument(document, file);
+                      await controller.uploadAllDocuments();
+
+                      if (controller.allDocumentsUploaded) {
+                        controller.proceedToNext();
+                      } else {
+                        Get.snackbar(
+                          'Upload Required',
+                          'Please upload all required documents before continuing.',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.red.withOpacity(0.8),
+                          colorText: Colors.white,
+                        );
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: controller.allDocumentsUploaded
-                        ?AppColors.kprimaryColor
+                        ? AppColors.kprimaryColor
                         : Colors.grey[300],
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -166,7 +171,7 @@ class DocumentUploadScreen extends GetView<DocumentUploadController> {
           label,
           style: TextStyle(
             fontSize: 12.sp,
-            color: isActive ? AppColors.kprimaryColor: Colors.grey[600],
+            color: isActive ? AppColors.kprimaryColor : Colors.grey[600],
             fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
@@ -179,7 +184,7 @@ class DocumentUploadScreen extends GetView<DocumentUploadController> {
       child: Container(
         height: 2,
         margin: EdgeInsets.symmetric(horizontal: 10),
-        color: isActive ?  AppColors.kprimaryColor: Colors.grey[300],
+        color: isActive ? AppColors.kprimaryColor : Colors.grey[300],
       ),
     );
   }
@@ -188,18 +193,42 @@ class DocumentUploadScreen extends GetView<DocumentUploadController> {
     Color statusColor = _getStatusColor(document.status ?? 'pending');
     IconData statusIcon = _getStatusIcon(document.status ?? 'pending');
 
-    String _getDocumentDescription() {
-      switch (document.type?.toLowerCase()) {
+    // String _getDocumentDescription() {
+    //   switch (document.type?.toLowerCase()) {
+    //     case 'driving license':
+    //       return 'A driving license is an official document';
+    //     case 'id card':
+    //       return 'An ID card is an official document';
+    //     case 'passport':
+    //       return 'A passport is a travel document';
+    //     case 'vehicle details':
+    //       return 'Enter your vehicle details';
+    //     default:
+    //       return 'Enter your vehicle details';
+    //   }
+    // }
+    String _getDocumentDescription(String type) {
+      switch (type.toLowerCase()) {
         case 'driving license':
-          return 'A driving license is an official document';
-        case 'id card':
-          return 'An ID card is an official document';
+          return 'Upload your valid Driving License';
+        case 'id card front':
+          return 'Upload the front side of your ID card';
+        case 'id card back':
+          return 'Upload the back side of your ID card';
         case 'passport':
-          return 'A passport is a travel document';
-        case 'vehicle details':
-          return 'Enter your vehicle details';
+          return 'Upload your Passport (valid)';
+        case 'vehicle registration':
+          return 'Upload your Vehicle Registration Certificate';
+        case 'vehicle front photo':
+          return 'Upload a clear photo of your vehicle front';
+        case 'vehicle rear photo':
+          return 'Upload a clear photo of your vehicle rear';
+        case 'driver side':
+          return 'Upload a clear photo of driver’s side';
+        case 'interior':
+          return 'Upload a photo of the vehicle interior';
         default:
-          return 'Enter your vehicle details';
+          return 'Upload required document';
       }
     }
 
@@ -248,7 +277,7 @@ class DocumentUploadScreen extends GetView<DocumentUploadController> {
               )
             else
               Text(
-                _getDocumentDescription(),
+                _getDocumentDescription(document.type ?? ''),
                 style: TextStyle(color: Colors.grey[600], fontSize: 12.sp),
               ),
 
@@ -480,8 +509,7 @@ class DocumentUploadScreen extends GetView<DocumentUploadController> {
       ),
     );
   }
-}
-
+}  
 
 
 // import 'package:flutter/material.dart';

@@ -1,61 +1,66 @@
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:taxi_driver/core/constants/app_colors.dart';
 import 'package:taxi_driver/data/models/document_model.dart';
-// import 'package:taxi_driver/features/driver/data/providers/api_provider.dart';
-// import 'dart:io';
+
+
+import 'dart:io';
+import 'package:taxi_driver/data/services/api_service.dart';
+import 'package:taxi_driver/routes/app_routes.dart';
 
 class DocumentUploadController extends GetxController {
   final ImagePicker _picker = ImagePicker();
+  final ApiService _apiService = ApiService(Get.find());
 
   var documents = <DocumentModel>[].obs;
   var isLoading = false.obs;
   var uploadProgress = 0.0.obs;
-  var currentUploadingDocument = ''.obs;
+
+  // Track selected files
+  File? drivingLicence;
+  File? idCardFront;
+  File? idCardBack;
+  File? passport;
+  File? vehicleRegistration;
+  File? vehicleFrontPhoto;
+  File? vehicleRearPhoto;
+  File? driverSide;
+  File? interior;
 
   final requiredDocuments = [
     'Driving License',
-    'ID card',
+    'ID Card Front',
+    'ID Card Back',
     'Passport',
     'Vehicle Registration',
+    'Vehicle Front Photo',
+    'Vehicle Rear Photo',
+    'Driver Side',
+    'Interior',
   ];
 
   @override
   void onInit() {
     super.onInit();
     initializeDocuments();
-    loadExistingDocuments(); 
   }
 
   void initializeDocuments() {
     documents.value = requiredDocuments
         .map(
           (type) => DocumentModel(
-            id:
-                DateTime.now().millisecondsSinceEpoch.toString() +
-                type.replaceAll(' ', ''),
+            id: DateTime.now().millisecondsSinceEpoch.toString() +
+                type.replaceAll(" ", ""),
             type: type,
             isRequired: true,
-            status: 'pending',
+            status: "pending",
             uploadDate: null,
           ),
         )
         .toList();
   }
 
-  // DEMO: Load some pre-filled statuses without API
-  Future<void> loadExistingDocuments() async {
-    isLoading.value = true;
-    await Future.delayed(const Duration(seconds: 1)); // Fake loading delay
-    documents[0].status =
-        'uploaded'; // Example: Driving License already uploaded
-    documents[0].filePath = 'demo/path/license.jpg';
-    documents.refresh();
-    isLoading.value = false;
-  }
-
+  /// Pick image for a specific document
   Future<void> pickImage(String documentType, ImageSource source) async {
     try {
       final XFile? image = await _picker.pickImage(
@@ -66,65 +71,114 @@ class DocumentUploadController extends GetxController {
       );
 
       if (image != null) {
-        await uploadDocument(image.path, documentType);
+        final file = File(image.path);
+
+        switch (documentType) {
+          case "Driving License":
+            drivingLicence = file;
+            break;
+          case "ID Card Front":
+            idCardFront = file;
+            break;
+          case "ID Card Back":
+            idCardBack = file;
+            break;
+          case "Passport":
+            passport = file;
+            break;
+          case "Vehicle Registration":
+            vehicleRegistration = file;
+            break;
+          case "Vehicle Front Photo":
+            vehicleFrontPhoto = file;
+            break;
+          case "Vehicle Rear Photo":
+            vehicleRearPhoto = file;
+            break;
+          case "Driver Side":
+            driverSide = file;
+            break;
+          case "Interior":
+            interior = file;
+            break;
+        }
+
+        updateDocumentStatus(documentType, "selected", file.path);
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to pick image: ${e.toString()}',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[800],
-      );
+      debugPrint(" Image Pick Error: $e");
+      Get.snackbar("Error", "Failed to pick image: $e",
+          backgroundColor: Colors.red[100], colorText: Colors.red[800]);
     }
   }
 
-  // DEMO: Fake upload without API
-  Future<void> uploadDocument(String filePath, String documentType) async {
-    currentUploadingDocument.value = documentType;
+  /// Upload all documents together (API requires all mandatory files at once)
+  Future<void> uploadAllDocuments() async {
+    if (vehicleFrontPhoto == null ||
+        vehicleRearPhoto == null ||
+        driverSide == null ||
+        interior == null) {
+      Get.snackbar("Error", "Please upload all required vehicle photos first",
+          backgroundColor: Colors.red[100], colorText: Colors.red[800]);
+      return;
+    }
+
     isLoading.value = true;
-    uploadProgress.value = 0.0;
-    updateDocumentStatus(documentType, 'uploading', filePath);
+    uploadProgress.value = 0.2;
 
-    _simulateUploadProgress();
+    try {
+      final response = await _apiService.uploadDocument(
+        drivingLicence: drivingLicence,
+        idCardFront: idCardFront,
+        idCardBack: idCardBack,
+        passport: passport,
+        vehicleRegistration: vehicleRegistration,
+        vehicleFrontPhoto: vehicleFrontPhoto!,
+        vehicleRearPhoto: vehicleRearPhoto!,
+        driverSide: driverSide!,
+        interior: interior!,
+      );
 
-    await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
+      debugPrint(" API Response Code: ${response.statusCode}");
+      debugPrint(" API Response Body: ${response.body}");
 
-    // Always mark as uploaded in demo
-    updateDocumentStatus(documentType, 'uploaded', filePath);
-
-    Get.snackbar(
-      'Success',
-      'Document uploaded successfully',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.green[100],
-      colorText: Colors.green[800],
-      icon: const Icon(Icons.check_circle, color: Colors.green),
-    );
-
-    isLoading.value = false;
-    uploadProgress.value = 0.0;
-    currentUploadingDocument.value = '';
-  }
-
-  void _simulateUploadProgress() {
-    for (int i = 1; i <= 10; i++) {
-      Future.delayed(Duration(milliseconds: i * 100), () {
-        if (uploadProgress.value < 0.9) {
-          uploadProgress.value = i * 0.1;
+      if (response.statusCode == 200) {
+        // Mark all as uploaded
+        for (var doc in documents) {
+          doc.status = "uploaded";
+          doc.uploadDate = DateTime.now().toIso8601String();
         }
-      });
+        documents.refresh();
+
+        Get.snackbar("Success", "All documents uploaded successfully",
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.green[100],
+            colorText: Colors.green[800]);
+      } else {
+        Get.snackbar("Error", "Upload failed: ${response.body}",
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red[100],
+            colorText: Colors.red[800]);
+      }
+    } catch (e) {
+      debugPrint("Upload Exception: $e");
+      Get.snackbar("Error", "Failed to upload: $e",
+          backgroundColor: Colors.red[100], colorText: Colors.red[800]);
+    } finally {
+      isLoading.value = false;
+      uploadProgress.value = 0.0;
     }
   }
 
+  /// Update status in the UI
   void updateDocumentStatus(String type, String status, [String? filePath]) {
-    final index = documents.indexWhere((doc) => doc.type == type);
+    final index = documents.indexWhere((d) => d.type == type);
     if (index != -1) {
       documents[index].status = status;
       if (filePath != null) {
         documents[index].filePath = filePath;
       }
-      if (status == 'uploaded') {
+      if (status == "uploaded") {
         documents[index].uploadDate = DateTime.now().toIso8601String();
       }
       documents.refresh();
@@ -132,63 +186,55 @@ class DocumentUploadController extends GetxController {
   }
 
   bool get allDocumentsUploaded {
-    final requiredDocs = documents.where((doc) => doc.isRequired).toList();
+    final requiredDocs = documents.where((d) => d.isRequired).toList();
     return requiredDocs.isNotEmpty &&
         requiredDocs.every(
-          (doc) => doc.status == 'uploaded' || doc.status == 'approved',
+          (d) => d.status == "uploaded" || d.status == "approved",
         );
   }
 
   void proceedToNext() {
     if (allDocumentsUploaded) {
-      Get.snackbar(
-        'Next Step',
-        'Proceeding to Vehicle Details...',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.blue[100],
-        colorText: Colors.blue[800],
-      );
-      // DEMO: Navigate directly
-      Get.toNamed('/vehicle-details');
+      Get.snackbar("Next Step", "Proceeding to Vehicle registration...",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.blue[100],
+          colorText: Colors.blue[800]);
+      // Get.toNamed('/vehicle-details');
+      Get.toNamed(AppRoutes.vehicleRegistration);
+
     } else {
-      Get.snackbar(
-        'Incomplete',
-        'Please upload all required documents',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.orange[100],
-        colorText: Colors.orange[800],
-      );
+      Get.snackbar("Incomplete", "Please upload all required documents",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.orange[100],
+          colorText: Colors.orange[800]);
     }
   }
 
+  /// Show image picker options
   void showImageSourceDialog(String documentType) {
     Get.bottomSheet(
       Container(
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
             Container(
-              width: 50,
-              height: 3,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
-                color: AppColors.kprimaryColor,
+                color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            SizedBox(height: 20.h),
-
-            // Upload Section
-            Text(
-              'Upload $documentType',
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: 20.h),
+            const SizedBox(height: 20),
+            Text('Upload $documentType',
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -210,32 +256,11 @@ class DocumentUploadController extends GetxController {
                 ),
               ],
             ),
-
-            SizedBox(height: 20),
-
-            // Separation
-            Divider(thickness: 1, color: Colors.grey[300]),
-
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.grey[100],
-                  ),
-                  onPressed: () => Get.back(),
-                  child: Text(
-                    'Cancel',
-                    style: TextStyle(
-                      color: AppColors.kprimaryColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
+            const SizedBox(height: 20),
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text('Cancel',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 16)),
             ),
           ],
         ),
@@ -253,7 +278,7 @@ class DocumentUploadController extends GetxController {
       onTap: onTap,
       child: Container(
         width: 120,
-        padding: EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey[300]!),
           borderRadius: BorderRadius.circular(12),
@@ -264,22 +289,22 @@ class DocumentUploadController extends GetxController {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: Color(0xFFDC143C).withOpacity(0.1),
+                color: const Color(0xFFDC143C).withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 24, color: Color(0xFFDC143C)),
+              child: Icon(icon, size: 24, color: const Color(0xFFDC143C)),
             ),
-            SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-            ),
+            const SizedBox(height: 8),
+            Text(label,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
           ],
         ),
       ),
     );
   }
 }
+
 
 
 // class DocumentUploadController extends GetxController {
@@ -542,6 +567,7 @@ class DocumentUploadController extends GetxController {
 //       isScrollControlled: true,
 //     );
 //   }
+
 
 
 //   Widget _buildSourceOption({

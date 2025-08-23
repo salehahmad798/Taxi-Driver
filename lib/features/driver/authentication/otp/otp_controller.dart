@@ -1,10 +1,11 @@
-
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:taxi_driver/data/services/api_service.dart';
 import 'package:taxi_driver/data/services/storage_service.dart';
 import 'package:taxi_driver/routes/app_routes.dart';
+
 class OtpController extends GetxController {
   final ApiService apiService;
   final StorageService storageService;
@@ -23,7 +24,8 @@ class OtpController extends GetxController {
   void onInit() {
     phoneNumber = Get.arguments['phone_number'] ?? '';
     if (phoneNumber.isEmpty) {
-      generalError.value = "Phone number missing. Please go back and try again.";
+      generalError.value =
+          "Phone number missing. Please go back and try again.";
     }
     super.onInit();
   }
@@ -53,11 +55,15 @@ class OtpController extends GetxController {
       if (resp.success) {
         if (resp.data != null) {
           // ========= save correct values =============
-          await storageService.saveAccessToken(resp.data!.accessToken);
-          // await storageService.saveUser(resp.data!.user);
+            await storageService.saveAccessToken(resp.data!.accessToken);
+  await storageService.saveUser(resp.data!.user);   // ✅ works now
+  await storageService.write("auth_token", resp.data!.accessToken);
+  log("✅ Token saved: ${resp.data!.accessToken}");
+
+
 
           otpController.clear();
-          Get.offAllNamed(AppRoutes.home);
+          Get.offAllNamed(AppRoutes.documentUpload);
         } else {
           generalError.value = 'No data received';
         }

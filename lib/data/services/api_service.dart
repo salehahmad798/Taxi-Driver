@@ -88,7 +88,7 @@
 //   // Driver Login
 //   Future<ApiResponse<AuthResponse>> loginDriver({
 //     required String identifier,
-    
+
 //   }) async {
 //     try {
 //       final response = await http.post(
@@ -124,8 +124,6 @@
 //       );
 //     }
 //   }
-
-
 
 //   // Verify OTP
 //   Future<ApiResponse<AuthResponse>> verifyOtp({
@@ -392,18 +390,19 @@
 //   }
 // }
 
-
-
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'package:http/http.dart';
 import 'package:taxi_driver/data/models/history_model.dart';
 import 'package:taxi_driver/data/models/notification_model.dart';
 import 'package:taxi_driver/data/models/review_model.dart';
 import 'package:taxi_driver/data/models/user_model.dart';
 import 'package:taxi_driver/data/models/wallet_model.dart';
 import 'package:taxi_driver/data/services/api_client.dart';
+import 'package:taxi_driver/data/services/storage_service.dart';
 
 import '../models/api_response.dart';
 import '../models/auth_models.dart';
@@ -418,7 +417,8 @@ class ApiService extends GetxService {
 
   ApiService(ApiClient find);
 
-  Future<ApiResponse<AuthResponse>> registerDriver(Map<String, Object?> body, {
+  Future<ApiResponse<AuthResponse>> registerDriver(
+    Map<String, Object?> body, {
     required String firstName,
     required String lastName,
     required String email,
@@ -467,128 +467,120 @@ class ApiService extends GetxService {
       );
     }
   }
-Future<ApiResponse<AuthResponse>> loginDriver({
-  required String identifier,
-}) async {
-  try {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/driver/login'),
-      headers: headers,
-      body: jsonEncode({'identifier': identifier}),
-    );
 
-    log('Login Response: ${response.statusCode} - ${response.body}');
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      return ApiResponse<AuthResponse>(
-        success: data['success'] ?? true,
-        message: data['message'] ?? 'Login successful',
-        // Safely handle null data
-        data: data['data'] != null
-            ? AuthResponse.fromJson(Map<String, dynamic>.from(data['data']))
-            : null,
-        meta: data['meta'] != null ? Meta.fromJson(data['meta']) : null,
+  Future<ApiResponse<AuthResponse>> loginDriver({
+    required String identifier,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/driver/login'),
+        headers: headers,
+        body: jsonEncode({'identifier': identifier}),
       );
-    } else {
-      return ApiResponse<AuthResponse>(
-        success: false,
-        message: data['message'] ?? 'Login failed',
-        errors: data['errors'],
-      );
-    }
-  } catch (e) {
-    log('Login Error: $e');
-    return ApiResponse<AuthResponse>(
-      success: false,
-      message: 'Network error occurred',
-    );
-  }
-}
 
-Future<ApiResponse<AuthResponse>> verifyOtp({
-  required String otp,
-  required String phoneNumber,
-}) async {
-  try {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/driver/otp/verify'),
-      headers: headers,
-      body: jsonEncode({
-        'phone_number': phoneNumber,
-        'otp': otp,
-      }),
-    );
+      log('Login Response: ${response.statusCode} - ${response.body}');
+      final data = jsonDecode(response.body);
 
-    log('OTP Verify Response: ${response.statusCode} - ${response.body}');
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      return ApiResponse<AuthResponse>(
-        success: data['success'] ?? true,
-        message: data['message'] ?? 'OTP verified successfully',
-        data: AuthResponse.fromJson(data['data']),
-        meta: data['meta'] != null ? Meta.fromJson(data['meta']) : null,
-      );
-    } else {
+      if (response.statusCode == 200) {
+        return ApiResponse<AuthResponse>(
+          success: data['success'] ?? true,
+          message: data['message'] ?? 'Login successful',
+          // Safely handle null data
+          data: data['data'] != null
+              ? AuthResponse.fromJson(Map<String, dynamic>.from(data['data']))
+              : null,
+          meta: data['meta'] != null ? Meta.fromJson(data['meta']) : null,
+        );
+      } else {
+        return ApiResponse<AuthResponse>(
+          success: false,
+          message: data['message'] ?? 'Login failed',
+          errors: data['errors'],
+        );
+      }
+    } catch (e) {
+      log('Login Error: $e');
       return ApiResponse<AuthResponse>(
         success: false,
-        message: data['message'] ?? 'OTP verification failed',
-        errors: data['errors'],
+        message: 'Network error occurred',
       );
     }
-  } catch (e) {
-    log('OTP Verify Error: $e');
-    return ApiResponse<AuthResponse>(
-      success: false,
-      message: 'Network error occurred',
-    );
   }
-}
 
-Future<ApiResponse<void>> resendOtp({
-  required String phoneNumber,
-}) async {
-  try {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/driver/otp/resend'),
-      headers: headers,
-      body: jsonEncode({'phone_number': phoneNumber}), // ✅ correct key
-    );
+  Future<ApiResponse<AuthResponse>> verifyOtp({
+    required String otp,
+    required String phoneNumber,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/driver/otp/verify'),
+        headers: headers,
+        body: jsonEncode({'phone_number': phoneNumber, 'otp': otp}),
+      );
 
-    log('Resend OTP Response: ${response.statusCode} - ${response.body}');
-    final data = jsonDecode(response.body);
+      log('OTP Verify Response: ${response.statusCode} - ${response.body}');
+      final data = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
+        return ApiResponse<AuthResponse>(
+          success: data['success'] ?? true,
+          message: data['message'] ?? 'OTP verified successfully',
+          data: AuthResponse.fromJson(data['data']),
+          meta: data['meta'] != null ? Meta.fromJson(data['meta']) : null,
+        );
+      } else {
+        return ApiResponse<AuthResponse>(
+          success: false,
+          message: data['message'] ?? 'OTP verification failed',
+          errors: data['errors'],
+        );
+      }
+    } catch (e) {
+      log('OTP Verify Error: $e');
+      return ApiResponse<AuthResponse>(
+        success: false,
+        message: 'Network error occurred',
+      );
+    }
+  }
+
+  Future<ApiResponse<void>> resendOtp({required String phoneNumber}) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/driver/otp/resend'),
+        headers: headers,
+        body: jsonEncode({'phone_number': phoneNumber}), // ✅ correct key
+      );
+
+      log('Resend OTP Response: ${response.statusCode} - ${response.body}');
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return ApiResponse<void>(
+          success: data['success'] ?? true,
+          message: data['message'] ?? 'OTP sent successfully',
+        );
+      } else {
+        return ApiResponse<void>(
+          success: false,
+          message: data['message'] ?? 'Failed to send OTP',
+          errors: data['errors'],
+        );
+      }
+    } catch (e) {
+      log('Resend OTP Error: $e');
       return ApiResponse<void>(
-        success: data['success'] ?? true,
-        message: data['message'] ?? 'OTP sent successfully',
-      );
-    } else {
-      return ApiResponse<void>(
         success: false,
-        message: data['message'] ?? 'Failed to send OTP',
-        errors: data['errors'],
+        message: 'Network error occurred',
       );
     }
-  } catch (e) {
-    log('Resend OTP Error: $e');
-    return ApiResponse<void>(
-      success: false,
-      message: 'Network error occurred',
-    );
   }
-}
-
 
   Future<ApiResponse<void>> logoutDriver(String token) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/driver/logout'),
-        headers: {
-          ...headers,
-          'Authorization': 'Bearer $token',
-        },
+        headers: {...headers, 'Authorization': 'Bearer $token'},
       );
 
       log('Logout Response: ${response.statusCode} - ${response.body}');
@@ -613,13 +605,6 @@ Future<ApiResponse<void>> resendOtp({
       );
     }
   }
-
-
-
-
-
-
-
 
   // ========================= USER SECTION =========================
 
@@ -693,10 +678,7 @@ Future<ApiResponse<void>> resendOtp({
       final response = await http.post(
         Uri.parse('$baseUrl/wallet/add-money'),
         headers: headers,
-        body: jsonEncode({
-          'amount': amount,
-          'payment_method': paymentMethod,
-        }),
+        body: jsonEncode({'amount': amount, 'payment_method': paymentMethod}),
       );
       return response.statusCode == 200;
     } catch (e) {
@@ -705,11 +687,7 @@ Future<ApiResponse<void>> resendOtp({
     }
   }
 
-
-
-
-
-Future<List<NotificationModel>> getNotifications() async {
+  Future<List<NotificationModel>> getNotifications() async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/notifications'),
@@ -783,8 +761,72 @@ Future<List<NotificationModel>> getNotifications() async {
       return false;
     }
   }
+
+  final StorageService storageService = Get.find();
+
+  Future<http.Response> uploadDocument({
+    File? drivingLicence,
+    File? idCardFront,
+    File? idCardBack,
+    File? vehicleRegistration,
+    File? passport,
+    required File vehicleFrontPhoto,
+    required File vehicleRearPhoto,
+    required File driverSide,
+    required File interior,
+  }) async {
+    try {
+      // ✅ Get token from storage
+      final token = await storageService.read("auth_token");
+      if (token == null) {
+        log(" No token found in storage.");
+        throw Exception("Token not available. Please login again.");
+      }
+
+      var uri = Uri.parse('$baseUrl/auth/driver/upload-document');
+      var request = http.MultipartRequest("POST", uri);
+
+      // ✅ Add headers with token
+      request.headers.addAll({
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      });
+
+      // Helper function to attach files
+      Future<void> attachFile(File? file, String field) async {
+        if (file != null) {
+          log(" Attaching file: $field -> ${file.path}");
+          request.files.add(
+            await http.MultipartFile.fromPath(field, file.path),
+          );
+        }
+      }
+
+      // Attach required files
+      await attachFile(vehicleFrontPhoto, "vehicle_front_photo");
+      await attachFile(vehicleRearPhoto, "vehicle_rear_photo");
+      await attachFile(driverSide, "driver_side");
+      await attachFile(interior, "interior");
+      // Attach optional files
+      await attachFile(drivingLicence, "driving_licence");
+      await attachFile(idCardFront, "id_card_front");
+      await attachFile(idCardBack, "id_card_back");
+      await attachFile(vehicleRegistration, "vehicle_registration");
+      await attachFile(passport, "passport");
+
+      log("📡 Sending request to $uri with headers: ${request.headers}");
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      log(" API Response Code: ${response.statusCode}");
+      log(" API Response Body: ${response.body}");
+      return response;
+    } catch (e) {
+      log(" UploadDocument Error: $e");
+      rethrow;
+    }
+  }
+
+
 }
-
-
-
-
