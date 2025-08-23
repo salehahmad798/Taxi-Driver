@@ -4,7 +4,6 @@ import 'package:taxi_driver/data/services/api_service.dart';
 class WalletController extends GetxController {
   final ApiService _apiService = Get.find<ApiService>();
 
-  /// Instead of one WalletModel, split into reactive balance & transactions
   final RxDouble balance = 0.0.obs;
   final RxList<Map<String, dynamic>> transactions = <Map<String, dynamic>>[].obs;
 

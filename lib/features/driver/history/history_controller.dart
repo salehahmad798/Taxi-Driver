@@ -33,12 +33,12 @@
 import 'package:get/get.dart';
 
 class HistoryModel {
-  final String status; // Completed or Cancel
-  final String from; // Start address
-  final String to; // End address
-  final String price; // e.g., ₦5000
-  final String date; // Date string
-  final double rating; // Rating value
+  final String status; 
+  final String from; 
+  final String to; 
+  final String price; 
+  final String date; 
+  final double rating; 
 
   HistoryModel({
     required this.status,
@@ -51,7 +51,6 @@ class HistoryModel {
 }
 
 class HistoryController extends GetxController {
-  // Observable list of history items
   var historyList = <HistoryModel>[].obs;
 
   @override
@@ -60,7 +59,6 @@ class HistoryController extends GetxController {
     loadHistory();
   }
 
-  // Simulating data loading (replace with API call later)
   void loadHistory() {
     historyList.value = [
       HistoryModel(

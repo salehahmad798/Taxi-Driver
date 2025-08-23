@@ -43,7 +43,8 @@ class MyApp extends StatelessWidget {
           themeMode: themeController.themeMode,
           debugShowCheckedModeBanner: false,
           // initialRoute: AppRoutes.splash,
-          initialRoute: AppRoutes.vehicleRegistration,
+          // initialRoute: AppRoutes.vehicleRegistration,
+          initialRoute: AppRoutes.home,
           initialBinding: InitialBinding(),
           getPages: AppPages.routes,
         );

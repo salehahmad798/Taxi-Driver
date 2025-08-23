@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:taxi_driver/core/widgets/custom_appbar.dart';
 import 'history_controller.dart';
 
 class HistoryScreen extends GetView<HistoryController> {
@@ -8,13 +9,7 @@ class HistoryScreen extends GetView<HistoryController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("History"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
-        ),
-      ),
+      appBar:CustomAppBar(text: 'History'),
       body: Obx(() {
         if (controller.historyList.isEmpty) {
           return const Center(child: Text('No history available.'));

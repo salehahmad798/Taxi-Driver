@@ -477,6 +477,8 @@ import 'package:taxi_driver/features/driver/home/controller/home_controller.dart
 import 'package:taxi_driver/routes/app_routes.dart';
 
 class HomeScreen extends GetView<HomeController> {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -626,28 +628,28 @@ class HomeScreen extends GetView<HomeController> {
                     title: 'Wallet',
                     subtitle: 'Check balance',
                     color: Colors.blue,
-                    onTap: () => Get.toNamed('/wallet'),
+                    onTap: () => Get.toNamed(AppRoutes.wallet),
                   ),
                   _buildQuickActionCard(
                     icon: Icons.history,
                     title: 'History',
                     subtitle: 'View trips',
                     color: Colors.green,
-                    onTap: () => Get.toNamed('/history'),
+                    onTap: () => Get.toNamed(AppRoutes.history),
                   ),
                   _buildQuickActionCard(
                     icon: Icons.star,
                     title: 'Reviews',
                     subtitle: 'Customer feedback',
                     color: Colors.orange,
-                    onTap: () => Get.toNamed('/customer-reviews'),
+                    onTap: () => Get.toNamed(AppRoutes.customerReviews),
                   ),
                   _buildQuickActionCard(
                     icon: Icons.emergency,
                     title: 'SOS',
                     subtitle: 'Emergency help',
                     color: Colors.red,
-                    onTap: () => Get.toNamed('/sos'),
+                    onTap: () => Get.toNamed(AppRoutes.sos),
                   ),
                 ],
               ),
@@ -747,7 +749,7 @@ class HomeScreen extends GetView<HomeController> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
