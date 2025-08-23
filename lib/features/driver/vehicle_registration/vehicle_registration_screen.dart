@@ -21,7 +21,7 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionHeader('Vehicle Type'),
+              _buildSectionHeader('Vehicle Type *'),
               SizedBox(height: 10),
               Obx(() {
                 return Wrap(
@@ -81,9 +81,11 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
               _buildTextFormField(
                 controller: controller.drivingLicenseController,
                 hint: 'Enter registration number',
-                validator: controller.validateRequired,
+                validator: (v) => controller.validateMinLength(v,
+                    min: 5, field: "Registration number"),
               ),
               SizedBox(height: 20),
+
               Row(
                 children: [
                   Expanded(
@@ -95,7 +97,8 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                         _buildTextFormField(
                           controller: controller.makeController,
                           hint: 'Toyota',
-                          validator: controller.validateRequired,
+                          validator: (v) =>
+                              controller.validateRequired(v, field: "Make"),
                         ),
                       ],
                     ),
@@ -110,7 +113,8 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                         _buildTextFormField(
                           controller: controller.modelController,
                           hint: 'Corolla',
-                          validator: controller.validateRequired,
+                          validator: (v) =>
+                              controller.validateRequired(v, field: "Model"),
                         ),
                       ],
                     ),
@@ -125,12 +129,12 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSectionHeader('Year'),
+                        _buildSectionHeader('Year *'),
                         SizedBox(height: 10),
                         _buildTextFormField(
                           controller: controller.yearController,
                           hint: '2020',
-                          validator: controller.validateRequired,
+                          validator: controller.validateYear,
                         ),
                       ],
                     ),
@@ -140,12 +144,13 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSectionHeader('Color'),
+                        _buildSectionHeader('Color *'),
                         SizedBox(height: 10),
                         _buildTextFormField(
                           controller: controller.colorController,
                           hint: 'White',
-                          validator: controller.validateRequired,
+                          validator: (v) =>
+                              controller.validateRequired(v, field: "Color"),
                         ),
                       ],
                     ),
@@ -153,21 +158,8 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                 ],
               ),
 
-              // SizedBox(height: 20),
-              // _buildSectionHeader('Fuel Type'),
-              // SizedBox(height: 10),
-              // Obx(
-              //   () => _buildDropdown(
-              //     value: controller.selectedFuelType.value.isEmpty
-              //         ? null
-              //         : controller.selectedFuelType.value,
-              //     items: controller.fuelTypes,
-              //     hint: 'Select fuel type',
-              //     onChanged: controller.setFuelType,
-              //   ),
-              // ),
               SizedBox(height: 20),
-              _buildSectionHeader('Fuel Type'),
+              _buildSectionHeader('Fuel Type *'),
               SizedBox(height: 10),
               Obx(() {
                 return Wrap(
@@ -181,13 +173,10 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                         padding: EdgeInsets.all(12),
                         width: 100,
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? Colors.red[100]
-                              : Colors.grey[200],
+                          color: isSelected ? Colors.red[100] : Colors.grey[200],
                           border: Border.all(
-                            color: isSelected
-                                ? AppColors.backColor
-                                : Colors.white,
+                            color:
+                                isSelected ? AppColors.backColor : Colors.white,
                             width: 2,
                           ),
                           borderRadius: BorderRadius.circular(12.r),
@@ -211,49 +200,53 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
               }),
 
               SizedBox(height: 20),
-              _buildSectionHeader('Owner Name'),
+              _buildSectionHeader('Owner Name *'),
               SizedBox(height: 10),
               _buildTextFormField(
                 controller: controller.ownernameController,
                 hint: 'Ahmad',
-                validator: controller.validateRequired,
+                validator: (v) =>
+                    controller.validateRequired(v, field: "Owner name"),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
 
-              _buildSectionHeader('Owner Address'),
+              _buildSectionHeader('Owner Address *'),
               SizedBox(height: 10),
               _buildTextFormField(
                 controller: controller.ownerAddressController,
-                hint: '123 main street lahore',
-                validator: controller.validateRequired,
+                hint: '123 main street Lahore',
+                validator: (v) =>
+                    controller.validateRequired(v, field: "Owner address"),
               ),
               SizedBox(height: 20),
-              _buildSectionHeader('Engine Number'),
+
+              _buildSectionHeader('Engine Number *'),
               SizedBox(height: 10),
               _buildTextFormField(
-                controller: controller.ownernameController,
+                controller: controller.engineNumberController,
                 hint: 'ENG12345689',
-                validator: controller.validateRequired,
+                validator: (v) => controller.validateMinLength(v,
+                    min: 6, field: "Engine number"),
               ),
 
               SizedBox(height: 20),
-              _buildSectionHeader('Chassis Number'),
+              _buildSectionHeader('Chassis Number *'),
               SizedBox(height: 10),
               _buildTextFormField(
                 controller: controller.chassisNumberController,
                 hint: 'CHS54359843543',
-                validator: controller.validateRequired,
+                validator: (v) => controller.validateMinLength(v,
+                    min: 6, field: "Chassis number"),
               ),
               SizedBox(height: 20),
 
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSectionHeader('Registration Date'),
+                        _buildSectionHeader('Registration Date *'),
                         SizedBox(height: 10),
                         Obx(
                           () => TextFormField(
@@ -261,8 +254,7 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                             onTap: () async {
                               final pickedDate = await showDatePicker(
                                 context: Get.context!,
-                                initialDate:
-                                    controller.registrationDate.value ??
+                                initialDate: controller.registrationDate.value ??
                                     DateTime.now(),
                                 firstDate: DateTime(2000),
                                 lastDate: DateTime(2100),
@@ -291,7 +283,7 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSectionHeader('Expiry Date'),
+                        _buildSectionHeader('Expiry Date *'),
                         SizedBox(height: 10),
                         Obx(
                           () => TextFormField(
@@ -299,8 +291,7 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                             onTap: () async {
                               final pickedDate = await showDatePicker(
                                 context: Get.context!,
-                                initialDate:
-                                    controller.expiryDate.value ??
+                                initialDate: controller.expiryDate.value ??
                                     DateTime.now(),
                                 firstDate: DateTime(2000),
                                 lastDate: DateTime(2100),
@@ -333,9 +324,13 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
                   width: double.infinity,
                   text: controller.isLoading.value ? 'Loading...' : 'Next',
                   onTap: (){
-                    controller.isLoading.value
-                      ? null
-                      : controller.submitVehicleRegistration();
+                    // 
+                    // controller.submitVehicleRegistration();
+
+                    if(!controller.isLoading.value){
+                      controller.submitVehicleRegistration();
+                    }
+
                   }
                 ),
               ),
@@ -384,6 +379,8 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
       ),
     );
   }
+
+
 
   Widget _buildDropdown({
     String? value,
@@ -440,4 +437,8 @@ class VehicleRegistrationScreen extends GetView<VehicleRegistrationController> {
       ),
     );
   }
+
 }
+
+
+  

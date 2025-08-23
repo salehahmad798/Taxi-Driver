@@ -395,7 +395,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' hide Response;
 import 'package:taxi_driver/data/models/history_model.dart';
 import 'package:taxi_driver/data/models/notification_model.dart';
 import 'package:taxi_driver/data/models/review_model.dart';
@@ -827,6 +827,49 @@ class ApiService extends GetxService {
       rethrow;
     }
   }
+Future<Response> registerVehicle(Map<String, dynamic> data) async {
+    final url = "$baseUrl/auth/driver/register-vehicle";
 
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: jsonEncode(data),
+      );
 
+      final decoded = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Response(
+          statusCode: response.statusCode,
+          body: {
+            "success": true,
+            "message": decoded["message"] ?? "Vehicle registered successfully!",
+            "data": decoded["data"] ?? {},
+          },
+        );
+      } else {
+        return Response(
+          statusCode: response.statusCode,
+          body: {
+            "success": false,
+            "message": decoded["message"] ?? "Failed to register vehicle",
+            "errors": decoded["errors"] ?? {},
+          },
+        );
+      }
+    } catch (e) {
+      return Response(
+        statusCode: 500,
+        body: {
+          "success": false,
+          "message": "Network error, please try again",
+          "error": e.toString(),
+        },
+      );
+    }
+  }
 }
